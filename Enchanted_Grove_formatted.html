@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Enchanted Grove</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Metamorphous&family=Mountains+of+Christmas:wght@400;700&display=swap">
+<style>
+:root {
+  --ink:#f4edd3;
+  --mute:#c4c9b4;
+  --gold:#ffd978;
+  --sage:#a9c4a0;
+  --lav:#b9a7ee;
+  --sky:#8fd0e6;
+  --deep:#0b1f1a;
+  --glass:rgba(14,32,30,.62);
+  --line:rgba(255,217,120,.38);
+  color-scheme:dark;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+
+* {
+  box-sizing:border-box;
+}
+
+html {
+  scroll-padding-top:env(safe-area-inset-top,0px);
+}
+
+body {
+  margin:0;
+  min-height:100vh;
+  color:var(--ink);
+  font:17px/1.55 Metamorphous,Georgia,serif;
+  background:radial-gradient(ellipse at 50% 0,#27406b 0,#142b3a 38%,#0b1f1a 80%);
+  transition:background 1.2s;
+  overflow-x:hidden;
+}
+
+body[data-env=marsh] {
+  background:radial-gradient(ellipse at 50% 0,#4a3585 0,#1d1b45 42%,#0a1a26 85%);
+}
+
+body[data-env=garden] {
+  background:radial-gradient(ellipse at 50% 0,#a4568f 0,#4d3d77 40%,#1b2f2a 85%);
+}
+
+body[data-env=woods] {
+  background:radial-gradient(ellipse at 50% 0,#17667a 0,#0d3a47 42%,#081b1a 85%);
+}
+
+h1,h2,h3,.big {
+  font-family:'Mountains of Christmas',Georgia,cursive;
+  font-weight:700;
+  margin:0;
+  line-height:1.05;
+}
+
+.screen {
+  position:relative;
+  z-index:2;
+  min-height:100vh;
+  padding:24px 16px 40px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  opacity:0;
+  transform:translateY(14px);
+  transition:opacity .4s,transform .4s;
+}
+
+.screen.on {
+  opacity:1;
+  transform:none;
+}
+
+.screen[hidden] {
+  display:none;
+}
+
+#ffs {
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:1;
+}
+
+.ff {
+  position:absolute;
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:#ffe9a0;
+  box-shadow:0 0 12px 4px rgba(255,225,130,.7);
+  animation:dr 9s ease-in-out infinite alternate,bl 3s ease-in-out infinite;
+}
+
+@keyframes dr {
+  to{transform:translate(40px,-60px);
+}
+
+}
+
+@keyframes bl {
+  50%{opacity:.25;
+}
+
+}
+
+#start {
+  justify-content:center;
+  text-align:center;
+  overflow:hidden;
+}
+
+#start .bg {
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  opacity:.85;
+}
+
+#start .bg svg {
+  width:100%;
+  height:100%;
+  display:block;
+}
+
+#start:after {
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  background:radial-gradient(ellipse at center,rgba(5,16,16,.65),rgba(5,16,16,.1) 70%);
+}
+
+#start h1 {
+  font-size:clamp(3rem,13vw,7.5rem);
+  color:var(--gold);
+  text-shadow:0 0 30px rgba(255,217,120,.55),0 4px 0 #5a3d12;
+}
+
+#start p {
+  font-size:clamp(1.05rem,3.5vw,1.5rem);
+  color:var(--ink);
+  margin:12px 0 28px;
+  text-shadow:0 2px 8px #000;
+}
+
+.btn {
+  font:inherit;
+  font-size:1.15rem;
+  color:#2b1d05;
+  background:linear-gradient(#ffe9a0,#f2b84a);
+  border:0;
+  border-radius:99px;
+  padding:14px 34px;
+  cursor:pointer;
+  box-shadow:0 0 28px rgba(255,217,120,.55),0 4px 0 #8a5d14;
+  letter-spacing:.04em;
+  transition:transform .2s;
+}
+
+.btn:hover {
+  transform:translateY(-2px) scale(1.03);
+}
+
+.btn.alt {
+  background:linear-gradient(#e0d6ff,#a893e8);
+  box-shadow:0 0 22px rgba(185,167,238,.5),0 4px 0 #5c4a9a;
+}
+
+.btn:focus-visible,.card:focus-visible {
+  outline:3px solid var(--sky);
+  outline-offset:3px;
+}
+
+.deco {
+  position:absolute;
+  bottom:0;
+  left:0;
+  right:0;
+  display:flex;
+  justify-content:space-around;
+  font-size:clamp(2rem,8vw,4rem);
+  z-index:0;
+  pointer-events:none;
+}
+
+.deco span {
+  display:inline-block;
+  transform-origin:50% 100%;
+  animation:sw 4s ease-in-out infinite alternate;
+}
+
+@keyframes sw {
+  from{transform:rotate(-7deg);
+}
+
+to {
+  transform:rotate(7deg);
+}
+
+}
+
+.top {
+  width:100%;
+  max-width:900px;
+  text-align:center;
+}
+
+.lab {
+  letter-spacing:.2em;
+  color:var(--gold);
+  font-size:.9rem;
+}
+
+.bar {
+  height:10px;
+  border-radius:9px;
+  background:rgba(255,255,255,.14);
+  margin:8px auto 16px;
+  overflow:hidden;
+  max-width:420px;
+}
+
+.bar i {
+  display:block;
+  height:100%;
+  background:linear-gradient(90deg,var(--sage),var(--gold));
+  border-radius:9px;
+  transition:width .6s;
+}
+
+.pv {
+  width:100%;
+  max-width:520px;
+  border-radius:22px;
+  overflow:hidden;
+  border:2px solid var(--line);
+  margin:0 auto 14px;
+  aspect-ratio:16/8;
+  box-shadow:0 0 30px rgba(0,0,0,.4);
+}
+
+.pv svg,.art svg,.fin svg {
+  width:100%;
+  height:100%;
+  display:block;
+}
+
+h2 {
+  font-size:clamp(1.9rem,6vw,3rem);
+  color:var(--gold);
+  margin-bottom:16px;
+  text-shadow:0 0 18px rgba(255,217,120,.35);
+}
+
+.cards {
+  display:grid;
+  gap:16px;
+  width:100%;
+  max-width:900px;
+  grid-template-columns:repeat(2,1fr);
+  margin:0 auto;
+}
+
+.cards.e {
+  grid-template-columns:repeat(3,1fr);
+}
+
+.card {
+  font:inherit;
+  color:var(--ink);
+  text-align:center;
+  background:var(--glass);
+  border:2px solid var(--line);
+  border-radius:26px;
+  padding:18px 14px;
+  cursor:pointer;
+  backdrop-filter:blur(6px);
+  transition:transform .25s,border-color .25s,box-shadow .25s;
+}
+
+.card:hover {
+  transform:translateY(-6px);
+  border-color:var(--gold);
+  box-shadow:0 0 30px rgba(255,217,120,.35);
+}
+
+.card.sel {
+  transform:scale(1.04);
+  border-color:#fff;
+  box-shadow:0 0 44px rgba(255,255,255,.6);
+}
+
+.card h3 {
+  font-size:1.7rem;
+  color:var(--gold);
+  margin:6px 0;
+}
+
+.card p {
+  margin:0;
+  color:var(--mute);
+  font-size:.92rem;
+  line-height:1.45;
+}
+
+.ic {
+  font-size:clamp(3rem,10vw,5rem);
+  line-height:1.1;
+  filter:drop-shadow(0 0 16px rgba(255,217,120,.6));
+}
+
+.art {
+  border-radius:18px;
+  overflow:hidden;
+  aspect-ratio:16/10;
+  margin-bottom:8px;
+}
+
+.fin {
+  width:100%;
+  max-width:900px;
+  border-radius:26px;
+  overflow:hidden;
+  border:3px solid var(--gold);
+  aspect-ratio:16/10;
+  box-shadow:0 0 60px rgba(255,217,120,.35);
+  margin:6px 0 18px;
+}
+
+#final h1 {
+  font-size:clamp(2.3rem,8vw,4.4rem);
+  color:var(--gold);
+  text-align:center;
+  text-shadow:0 0 24px rgba(255,217,120,.5);
+}
+
+#final p {
+  max-width:640px;
+  text-align:center;
+  margin:10px auto 22px;
+  font-size:1.1rem;
+}
+
+.row {
+  display:flex;
+  gap:14px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+
+.fl {
+  animation:fl 5s ease-in-out infinite alternate;
+}
+
+@keyframes fl {
+  to{transform:translate(10px,-16px);
+}
+
+}
+
+.bk {
+  animation:bl 2.6s ease-in-out infinite;
+}
+
+#md {
+  position:fixed;
+  inset:0;
+  z-index:9;
+  background:rgba(5,12,12,.85);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+  text-align:center;
+}
+
+#md.o {
+  display:flex;
+}
+
+#md div {
+  max-width:560px;
+}
+
+#md img {
+  width:100%;
+  border-radius:16px;
+  border:2px solid var(--gold);
+}
+
+#md p {
+  margin:10px 0;
+}
+
+@media(max-width:640px) {
+  .cards.e{grid-template-columns:1fr;
+}
+
+.card {
+  padding:12px 8px;
+  border-radius:20px;
+}
+
+.card h3 {
+  font-size:1.35rem;
+}
+
+.card p {
+  font-size:.8rem;
+}
+
+}
+
+@media (prefers-reduced-motion:reduce) {
+  *{animation:none!important;
+  transition:none!important;
+}
+
+}
+
+.mg {
+  width:100%;
+  max-width:780px;
+  text-align:center;
+}
+
+.ins {
+  max-width:560px;
+  margin:0 auto 6px;
+}
+
+.play {
+  position:relative;
+  overflow:hidden;
+  min-height:250px;
+  border-radius:26px;
+  border:2px solid var(--line);
+  background:rgba(8,22,22,.6);
+  padding:14px;
+  margin:12px 0;
+  box-shadow:inset 0 0 50px rgba(0,0,0,.4);
+}
+
+.play.won {
+  box-shadow:inset 0 0 70px rgba(255,217,120,.5),0 0 40px rgba(255,217,120,.4);
+}
+
+.msg {
+  min-height:1.6em;
+  color:var(--sky);
+  margin:4px 0;
+}
+
+.clue {
+  min-height:1.8em;
+  color:var(--gold);
+  font-size:1.05rem;
+  margin-bottom:8px;
+}
+
+.tiles {
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  justify-content:center;
+  margin:8px 0;
+}
+
+.tk {
+  font:inherit;
+  font-size:2.2rem;
+  width:82px;
+  height:82px;
+  border-radius:24px;
+  border:2px solid var(--line);
+  background:rgba(255,255,255,.07);
+  color:var(--ink);
+  cursor:pointer;
+  transition:transform .2s,box-shadow .2s;
+}
+
+.tk.lit,.tk.lit2 {
+  transform:scale(1.15);
+  box-shadow:0 0 36px 8px var(--gold);
+  background:rgba(255,217,120,.35);
+}
+
+.tk.fg {
+  filter:hue-rotate(var(--h));
+}
+
+.tk.cr {
+  box-shadow:0 0 14px var(--sky);
+}
+
+.tk.rn {
+  color:var(--gold);
+  text-shadow:0 0 12px var(--gold);
+}
+
+.tk.wf {
+  border-radius:50%;
+}
+
+.tk.ln {
+  border-radius:12px 12px 30px 30px;
+}
+
+.bad {
+  animation:shk .4s;
+  border-color:#ff8a8a!important;
+}
+
+@keyframes shk {
+  25%{transform:translateX(-8px);
+}
+
+75% {
+  transform:translateX(8px);
+}
+
+}
+
+.arena {
+  position:relative;
+  height:290px;
+}
+
+.tg {
+  position:absolute;
+  font:inherit;
+  font-size:2.8rem;
+  background:none;
+  border:0;
+  opacity:.45;
+  cursor:pointer;
+  padding:6px;
+  transition:transform .2s,opacity .2s,filter .2s;
+}
+
+.tg.lit {
+  opacity:1;
+  transform:scale(1.3) translateY(-8px);
+  filter:drop-shadow(0 0 18px #ffd978);
+}
+
+.tg.done {
+  opacity:.25;
+  pointer-events:none;
+}
+
+.tg.gl {
+  opacity:.7;
+  filter:drop-shadow(0 0 5px #ffe58a);
+}
+
+.tg.hint,.nd.hint {
+  animation:hn .9s ease-in-out infinite alternate;
+}
+
+@keyframes hn {
+  to{filter:drop-shadow(0 0 20px #ffd978);
+  transform:scale(1.2);
+}
+
+}
+
+.tg.ffd {
+  animation:dr 5s ease-in-out infinite alternate;
+}
+
+.pr {
+  height:8px;
+  border-radius:8px;
+  background:rgba(255,255,255,.14);
+  overflow:hidden;
+}
+
+.pr i {
+  display:block;
+  height:100%;
+  width:0;
+  background:var(--gold);
+  transition:width .3s;
+}
+
+.lv {
+  display:flex;
+  gap:16px;
+  justify-content:center;
+  margin:7px;
+}
+
+.nd {
+  font:inherit;
+  font-size:1.7rem;
+  min-width:60px;
+  height:60px;
+  border-radius:30px;
+  border:2px solid var(--line);
+  background:rgba(255,255,255,.07);
+  color:var(--ink);
+  cursor:pointer;
+  padding:0 10px;
+}
+
+.nd:disabled {
+  opacity:.45;
+  cursor:default;
+}
+
+.nd.on {
+  opacity:1;
+  border-color:var(--gold);
+  box-shadow:0 0 22px var(--gold);
+}
+
+.nd.cl {
+  border-color:rgba(255,217,120,.8);
+  box-shadow:0 0 10px rgba(255,217,120,.5);
+}
+
+.nd.bad {
+  opacity:.3;
+  filter:grayscale(1);
+}
+
+.rg {
+  display:grid;
+  grid-template-columns:repeat(3,72px);
+  justify-content:center;
+  margin:6px auto;
+}
+
+.rt {
+  position:relative;
+  width:72px;
+  height:72px;
+  overflow:hidden;
+  padding:0;
+  border:0;
+  box-shadow:inset 0 0 0 1px var(--line);
+  background:rgba(255,255,255,.07);
+  transition:transform .3s;
+  cursor:pointer;
+}
+
+.rt span {
+  position:absolute;
+  width:216px;
+  height:216px;
+  line-height:216px;
+  font-size:190px;
+  text-align:center;
+  color:var(--gold);
+  font-family:'Noto Sans Runic','Segoe UI Symbol',serif;
+  text-shadow:0 0 14px var(--gold);
+}
+
+.bf {
+  box-shadow:0 0 0 4px var(--c),0 0 18px var(--c);
+}
+
+.bf.sel {
+  transform:scale(1.2);
+}
+
+.tk.done {
+  opacity:.35;
+}
+
+.trk {
+  position:relative;
+  height:90px;
+  margin:10px 0;
+}
+
+.trk span {
+  position:absolute;
+  top:10px;
+  font-size:3.4rem;
+  transition:left .7s;
+}
+
+.trk b {
+  position:absolute;
+  right:4%;
+  top:14px;
+  font-size:3rem;
+}
+
+.pt {
+  position:absolute;
+  top:-40px;
+  font-size:2.2rem;
+  background:none;
+  border:0;
+  cursor:pointer;
+  animation:fa linear forwards;
+  opacity:.8;
+}
+
+.pt.mg2 {
+  opacity:1;
+  filter:drop-shadow(0 0 12px #fff) drop-shadow(0 0 8px #ffb3e0);
+}
+
+@keyframes fa {
+  to{top:100%;
+}
+
+}
+
+.sp {
+  position:absolute;
+  pointer-events:none;
+  animation:spk 1.1s forwards;
+}
+
+@keyframes spk {
+  to{transform:translate(var(--x),var(--y));
+  opacity:0;
+}
+
+}
+
+.hearts {
+  font-size:1.5rem;
+  letter-spacing:.25em;
+  margin:2px 0 4px;
+}
+
+.hearts span {
+  display:inline-block;
+  transition:filter .5s,opacity .5s,transform .5s;
+  filter:drop-shadow(0 0 8px rgba(255,90,120,.7));
+}
+
+.hearts span.lost {
+  filter:grayscale(1);
+  opacity:.35;
+  transform:scale(.85);
+}
+
+.slips {
+  font-size:1.1rem;
+  margin:2px 0;
+}
+
+.slips:before {
+  content:"Steady magic: ";
+  color:var(--mute);
+  font-size:.85rem;
+  letter-spacing:.1em;
+}
+
+.slips span.lost {
+  filter:grayscale(1);
+  opacity:.25;
+}
+
+.play.lost {
+  box-shadow:inset 0 0 70px rgba(150,90,220,.55);
+}
+
+.tier {
+  text-align:center;
+  margin:0 auto 22px;
+  max-width:640px;
+}
+
+.tier h3 {
+  font-size:2rem;
+  color:var(--gold);
+}
+
+.tier ul {
+  list-style:none;
+  padding:0;
+  margin:8px 0;
+}
+</style>
+</head>
+<body>
+<div id="ffs"></div>
+<section class="screen on" id="start">
+<div class="bg" id="sbg"></div>
+<h1>ENCHANTED GROVE</h1>
+<p>Create a world of your own magic.</p>
+<button class="btn" id="go">START GAME</button>
+<div class="deco"><span>🌿</span><span style="animation-delay:-1s">🍄</span><span style="animation-delay:-2s">🌱</span><span style="animation-delay:-.5s">🍄</span><span style="animation-delay:-3s">🌿</span><span style="animation-delay:-1.5s">🍃</span></div>
+</section>
+<section class="screen" id="round" hidden></section>
+<section class="screen" id="final" hidden></section>
+<section class="screen" id="mini" hidden></section>
+<div id="md"><div><img id="mi" alt="Your enchanted grove"><p>Press and hold the picture (or right-click it) to save your grove.</p><button class="btn" id="mc">Close</button></div></div>
+<script>
+const $=s=>document.querySelector(s);
+const EM='font-family="Apple Color Emoji,Segoe UI Emoji,Noto Color Emoji,sans-serif"';
+let sd=1;
+const R=()=>(sd*16807%2147483647)/2147483647,rr=(a,b)=>a+R()*(b-a);
+
+const PAL={
+woods:{sky:['#06222e','#0f4a5c','#1c7a82'],h:'#0e4150',g:'#0d3b3a',g2:'#092a2b'},
+marsh:{sky:['#1a1038','#46307a','#2d7f8f'],h:'#3b3470',g:'#12263a',g2:'#0b1a2a',w:'#1fb3b8'},
+garden:{sky:['#3b5fa0','#e98fb0','#ffd68a'],h:'#7bb072',g:'#5f9a4b',g2:'#3f7a3a'}
+};
+
+const tw=(x,y,h,c)=>`<path d="M${x} ${y}C${x-30} ${y-h*.3} ${x+40} ${y-h*.5} ${x} ${y-h*.8}M${x} ${y-h*.55}C${x+30} ${y-h*.65} ${x+50} ${y-h*.75} ${x+45} ${y-h}M${x} ${y-h*.7}C${x-35} ${y-h*.8} ${x-45} ${y-h*.95} ${x-40} ${y-h*1.05}" stroke="${c}" stroke-width="14" stroke-linecap="round" fill="none"/>`;
+
+const GL={a:'#ffd978',b:'#7fe9ff',c:'#ffa6d6'};
+
+function base(env,u){
+const P=PAL[env];
+let s=`<defs><linearGradient id="sk${u}" x1="0" y1="0" x2="0" y2="1">${P.sky.map((c,i)=>`<stop offset="${i/2}" stop-color="${c}"/>`).join('')}</linearGradient>${Object.keys(GL).map(k=>`<radialGradient id="g${k}${u}"><stop offset="0" stop-color="${GL[k]}" stop-opacity=".85"/><stop offset="1" stop-color="${GL[k]}" stop-opacity="0"/></radialGradient>`).join('')}</defs><rect width="800" height="500" fill="url(#sk${u})"/>`;
+if(env=='garden'){
+s+=`<circle cx="620" cy="270" r="170" fill="url(#ga${u})"/><ellipse cx="160" cy="90" rx="110" ry="22" fill="#ffd0e0" opacity=".5"/><ellipse cx="420" cy="60" rx="90" ry="16" fill="#ffe3c0" opacity=".45"/>`;
+}else{
+for(let i=0;i<40;i++)s+=`<circle cx="${rr(0,800)}" cy="${rr(0,230)}" r="${rr(.6,1.8)}" fill="#fff" opacity="${rr(.3,.9)}"/>`;
+}
+if(env=='marsh')s+=`<path d="M0 330L90 250L180 310L300 220L420 300L540 240L660 305L800 235V340H0Z" fill="${P.h}" opacity=".75"/>`;
+else s+=`<path d="M0 330Q120 250 240 305T480 295T800 285V500H0Z" fill="${P.h}"/>`;
+if(env=='woods'){
+[[40,110],[235,90],[585,100],[765,120]].forEach(([x,w])=>{
+s+=`<path d="M${x-w/2} 500C${x-w*.35} 300 ${x-w*.3} 100 ${x-w*.2} 0H${x+w*.2}C${x+w*.3} 100 ${x+w*.35} 300 ${x+w/2} 500Z" fill="#103a45"/><path d="M${x+w*.05} 500C${x+w*.1} 300 ${x+w*.1} 100 ${x+w*.1} 0H${x+w*.2}C${x+w*.3} 100 ${x+w*.35} 300 ${x+w/2} 500Z" fill="#1d6a74" opacity=".5"/>`;
+});
+for(let i=0;i<30;i++){
+const x=rr(0,800),l=rr(60,230),c=R()<.5?'#7fe9ff':'#ffd978';
+s+=`<line x1="${x}" y1="0" x2="${x}" y2="${l}" stroke="${c}" stroke-width="1.3" opacity=".6"/><circle class="bk" style="animation-delay:-${rr(0,3)}s" cx="${x}" cy="${l}" r="3" fill="${c}"/><circle cx="${x}" cy="${l*.6}" r="2" fill="${c}" opacity=".8"/>`;
+}
+}
+if(env=='marsh')s+=tw(90,430,330,'#0b1424')+tw(725,430,330,'#0b1424')+tw(250,360,150,'#1a2540');
+if(env=='garden'){
+for(let i=0;i<9;i++){const t=i/6;s+=`<circle cx="${400+Math.sin(i)*30}" cy="${495-t*135}" r="${46-t*26}" fill="#e4d8b8" opacity=".85"/>`;}
+for(let i=0;i<70;i++)s+=`<circle cx="${rr(0,800)}" cy="${rr(350,495)}" r="${rr(2,5)}" fill="${['#ff8fb8','#ffd24a','#c3a5ff','#fff'][i%4]}"/>`;
+}
+s+=`<path d="M0 340Q200 320 400 340T800 335V500H0Z" fill="${P.g}"/>`;
+if(env=='marsh'){
+s+=`<path d="M0 362Q200 346 400 366T800 356V500H0Z" fill="${P.w}" opacity=".8"/>`;
+for(let i=0;i<14;i++){const x=rr(0,740),y=rr(375,490);s+=`<line x1="${x}" y1="${y}" x2="${x+rr(30,70)}" y2="${y}" stroke="#d8ffff" stroke-width="2" opacity=".3"/>`;}
+for(let i=0;i<6;i++)s+=`<ellipse cx="${rr(40,760)}" cy="${rr(380,480)}" rx="22" ry="7" fill="#2f8a5a"/>`;
+s+=`<ellipse cx="400" cy="340" rx="420" ry="26" fill="#dff" opacity=".1"/>`;
+}else{
+s+=`<path d="M0 420Q250 400 500 425T800 415V500H0Z" fill="${P.g2}"/>`;
+}
+if(env=='woods'){
+for(let i=0;i<55;i++)s+=`<circle cx="${rr(0,800)}" cy="${rr(375,495)}" r="${rr(2,4.5)}" fill="${R()<.6?'#bff3f0':'#f7a8d0'}" opacity=".9"/>`;
+}
+return s;
+}
+
+const fx={
+fire:u=>{let s='';for(let i=0;i<22;i++){const x=rr(40,760),y=rr(130,430);s+=`<g class="fl" style="animation-delay:-${rr(0,5)}s"><circle cx="${x}" cy="${y}" r="10" fill="#ffe58a" opacity=".3"/><circle class="bk" style="animation-delay:-${rr(0,3)}s" cx="${x}" cy="${y}" r="3.2" fill="#fff3b0"/></g>`;}return s;},
+run:u=>{let s='',g='ᚠᚢᚦᚨᚱᚲᚷᚹᛉᛟ';for(let i=0;i<9;i++)s+=`<text class="fl" style="animation-delay:-${rr(0,5)}s" x="${rr(80,720)}" y="${rr(110,330)}" font-size="${rr(26,42)}" fill="#ffe08a" opacity=".92">${g[i]}</text>`;return s;},
+bf:u=>{let s='';for(let i=0;i<8;i++)s+=`<text class="fl" style="animation-delay:-${rr(0,5)}s" x="${rr(60,740)}" y="${rr(170,380)}" font-size="${rr(28,40)}" ${EM}>🦋</text>`;return s;},
+pet:u=>{let s='';for(let i=0;i<16;i++)s+=`<text class="fl" style="animation-delay:-${rr(0,5)}s" x="${rr(0,790)}" y="${rr(60,440)}" font-size="${rr(14,22)}" ${EM}>🌸</text>`;return s;},
+rose:u=>{let s='';for(let i=0;i<14;i++)s+=`<text x="${rr(20,780)}" y="${rr(450,495)}" font-size="${rr(26,36)}" ${EM}>🌹</text>`;return s;}
+};
+
+const em=(c,x,y,s,g,u)=>(g?`<circle cx="${x}" cy="${y-s*.35}" r="${s*.8}" fill="url(#g${g}${u})"/>`:'')+`<text x="${x}" y="${y}" font-size="${s}" text-anchor="middle" ${EM}>${c}</text>`;
+
+function scene0(S,u){
+sd=11;
+let s=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice" width="800" height="500">`+base(S.env,u);
+S.c.forEach(o=>{o.el.forEach(e=>{s+=typeof e=='function'?e(u):typeof e=='string'?e:em(e[0],e[1],e[2],e[3],e[4],u);});});
+S.c.forEach(o=>{if(o.fx)s+=fx[o.fx](u);});
+return s+'</svg>';
+}
+
+/* ---- Hearts + performance-based Grove ---- */
+const hrt=()=>`<div class="hearts" aria-label="${HP} of 3 hearts">${[0,1,2].map(i=>`<span class="${i<HP?'':'lost'}">❤️</span>`).join('')}</div>`;
+
+const TIER=[
+{t:'🌑 A Sleeping Grove',l:['🍂 Most areas lie dormant','✨ One small spark still waits']},
+{t:'🌙 A Mysterious, Darker Grove',l:['🍂 Some areas remain dormant']},
+{t:'🌿 A Healthy Grove',l:['✨ Some magic']},
+{t:'✨ A Vibrant Grove',l:['🌳 Lots of wildlife','🌸 Everything glowing']}
+];
+
+const WL={
+woods:['🦉','🐿️','🦊','🐇','🦌','🦔'],
+marsh:['🦉','🦇','🐸','🐢','🦆','🦎'],
+garden:['🐦','🐇','🐝','🦔','🐿️','🦢']
+};
+
+function mood(env,hp,u){
+let s='';
+const spark=(n,c)=>{for(let i=0;i<n;i++){const x=rr(20,780),y=rr(60,480);s+=`<g class="fl" style="animation-delay:-${rr(0,5)}s"><circle cx="${x}" cy="${y}" r="9" fill="${c}" opacity=".3"/><circle class="bk" style="animation-delay:-${rr(0,3)}s" cx="${x}" cy="${y}" r="3" fill="#fff6c0"/></g>`;}};
+const wild=(n,lo,hi)=>{const L=WL[env];for(let i=0;i<n;i++)s+=em(L[i%L.length],rr(30,770),rr(430,492),rr(lo,hi),'a',u);};
+const leaves=n=>{for(let i=0;i<n;i++)s+=`<text x="${rr(10,780)}" y="${rr(400,495)}" font-size="${rr(20,32)}" ${EM}>🍂</text>`;};
+if(hp>=3){
+s+=`<circle cx="400" cy="300" r="460" fill="url(#ga${u})" opacity=".28"/>`;
+spark(34,'#ffe58a');wild(8,30,44);
+}else if(hp==2){
+spark(12,'#ffe58a');wild(2,28,36);
+}else if(hp==1){
+s+=`<rect width="800" height="500" fill="#050816" opacity=".42"/><ellipse cx="400" cy="400" rx="460" ry="40" fill="#cfe" opacity=".12"/>`;
+leaves(14);spark(4,'#9fe0ff');
+}else{
+s+=`<rect width="800" height="500" fill="#03040c" opacity=".6"/>`;
+leaves(22);s+=em('✨',400,330,48,'a',u);
+}
+return s;
+}
+
+function scene(S,u){
+const hp=S.hp==null?3:S.hp;
+let S2=S;
+if(hp<=1&&S.dm)S2={...S,c:S.c.map(o=>S.dm[o.id]?{...o,fx:null,el:[()=>`<g opacity=".5" filter="url(#dm${u})">`,...o.el,()=>'</g>']}:o)};
+const svg=scene0(S2,u);
+if(S.hp==null)return svg;
+return svg.slice(0,-6)+`<defs><filter id="dm${u}"><feColorMatrix type="saturate" values=".1"/></filter></defs>`+mood(S.env,hp,u)+'</svg>';
+}
+
+const ring=u=>{
+let s='<ellipse cx="400" cy="408" rx="92" ry="22" fill="#2d6b3a" opacity=".8"/>';
+['🌼','🌸','🌷','🌺','🌼','🌸','🌷','🌺','🌼','🌸'].forEach((c,i)=>{const a=i/10*6.283;s+=em(c,400+Math.cos(a)*92,415+Math.sin(a)*22,34,'',u);});
+return s+em('✨',400,410,34,'a',u);
+};
+
+const canopy=u=>{
+let s='';
+for(let i=0;i<16;i++)s+=`<circle cx="${i*54}" cy="${rr(0,34)}" r="${rr(34,56)}" fill="#0b3a2c"/>`;
+for(let i=0;i<16;i++)s+=`<circle class="bk" style="animation-delay:-${rr(0,3)}s" cx="${rr(0,800)}" cy="${rr(20,70)}" r="3" fill="#ffd978"/>`;
+return s;
+};
+
+const bloom=u=>{
+let s='<path d="M120 400C110 300 140 200 120 110" stroke="#5b3a3a" stroke-width="16" fill="none"/>';
+for(let i=0;i<18;i++)s+=`<circle cx="${rr(40,210)}" cy="${rr(40,150)}" r="${rr(24,40)}" fill="#ffb3cf" opacity=".85"/>`;
+return s;
+};
+
+const lant=u=>{
+let s='<path d="M0 60Q400 190 800 60" stroke="#6b5a3a" stroke-width="3" fill="none"/>';
+for(let i=1;i<8;i++){const x=i*100,y=60+Math.sin(i/8*Math.PI)*98*1.0;s+=em('🏮',x,y+30,30,'a',u);}
+return s;
+};
+
+const cry=u=>{
+let s='';
+[[560,100,330],[610,60,330],[670,120,330]].forEach(c=>{
+s+=`<polygon points="${c[0]},${c[2]} ${c[0]+18},${c[2]-c[1]*2} ${c[0]+36},${c[2]}" fill="#ff8fd8" opacity=".85"/><circle cx="${c[0]+18}" cy="${c[2]-c[1]}" r="46" fill="url(#gc${u})"/>`;
+});
+return s;
+};
+
+const O=(id,ic,n,d,ph,el,f)=>({id,ic,n,d,ph,el,fx:f});
+
+const ENV={
+woods:{n:'Ancient Woods',d:'Colossal trees, tangled roots and soft golden light from forgotten magic.',ph:'ancient woods',r:[
+['Choose a Landmark',[
+O('w1','🏛️','Forgotten Temple','Moss-covered columns hum with an old, patient magic.','a forgotten temple',[['🏛️',400,338,130,'a']]),
+O('w2','🌳','Ancient Hollow Tree','A door-shaped glow hides inside its enormous trunk.','an ancient hollow tree',[['🌳',400,345,170,'a'],'<ellipse cx="400" cy="300" rx="13" ry="22" fill="#ffd36a" opacity=".9"/>'])
+]],
+['Choose a Magical Element',[
+O('w3','💎','Glowing Crystals','Cool blue light pulses between the roots.','glowing crystals',[['💎',160,415,90,'b'],['💎',100,438,52,'b'],['💎',225,438,56,'b']]),
+O('w4','🍄','Giant Moonlit Mushrooms','Silver caps as tall as cottages drink the moonlight.','giant moonlit mushrooms',[['🍄',150,420,100,'b'],['🍄',235,438,62,'b'],['🍄',90,442,52,'b']])
+]],
+['Choose a Creature',[
+O('w5','🦌','Ancient Forest Deer','Its antlers hold a thousand years of moss and starlight.','an ancient forest deer',[['🦌',630,425,90,'a']]),
+O('w6','🐺','Mystical Wolf','A quiet guardian whose eyes glow like lanterns.','a mystical wolf',[['🐺',630,425,86,'b']])
+]],
+['Choose a Final Touch',[
+O('w7','🌙','Moonlit Canopy','Leaves knit together overhead, strung with sleepy lights.','a moonlit canopy',[['🌙',650,115,72,'a'],canopy]),
+O('w8','✨','Floating Ancient Runes','Glowing symbols drift up from the old stones.','floating ancient runes',[],'run')
+]]
+]},
+
+marsh:{n:'Moonlit Marsh',d:'Glowing waters, drifting mist and whispers beneath a violet moon.',ph:'moonlit marsh',r:[
+['Choose a Landmark',[
+O('m1','🛖','Witch Hut','A crooked hut on stilts, window lit from within.','a crooked witch hut',[['🛖',400,345,120,'a']]),
+O('m2','🏰','Ancient Ruins','Broken towers sunk halfway into the water.','ancient ruins',[['🏰',400,345,130,'c']])
+]],
+['Choose a Magical Element',[
+O('m3','🍄','Giant Mushrooms','Glowing caps tall enough to shelter a witch.','giant mushrooms',[['🍄',150,425,100,'c'],['🍄',235,440,62,'c']]),
+O('m4','🌳','Twisted Trees','Bent trunks that curl like sleeping dragons.','twisted trees',[u=>tw(170,430,230,'#150f2c')+`<circle cx="170" cy="230" r="40" fill="url(#gc${u})"/>`,u=>tw(240,440,150,'#201a45')])
+]],
+['Choose a Creature',[
+O('m5','✨','Fireflies','Hundreds of tiny lights, writing slow circles.','drifting fireflies',[],'fire'),
+O('m6','🐸','Frog Spirits','Pale, singing guardians of the still water.','frog spirits',[['🐸',620,430,64,'b'],['🐸',705,445,38,'b']],'fire')
+]],
+['Choose a Final Touch',[
+O('m7','💎','Crystal Spires','Pink crystals rise from the mud like frozen lightning.','crystal spires',[cry]),
+O('m8','🌕','Pale Full Moon','A huge cold moon, doubled in the water below.','a pale full moon',[['🌕',640,110,90,'a'],'<ellipse cx="640" cy="400" rx="60" ry="8" fill="#fff6c8" opacity=".35"/>'])
+]]
+]},
+
+garden:{n:'Mythical Garden',d:'Lantern-lit paths, blossoms and tiny wonders at golden dusk.',ph:'mythical garden',r:[
+['Choose a Landmark',[
+O('g1','🌼','Flower Circle','A ring of blooms that opens when you step inside.','a ring of dancing flowers',[ring]),
+O('g2','🏡','Fairy Village','Tiny cottages tucked among the roots and petals.','a tiny fairy village',[['🏡',350,350,80,'a'],['🏡',470,360,52,'a'],['🍄',420,365,48,'c']])
+]],
+['Choose a Magical Element',[
+O('g3','⛲','Glowing Fountain','Water that glimmers with wishes.','a glowing fountain',[['⛲',165,420,110,'b']]),
+O('g4','🏮','Strings of Lanterns','Warm lights that hum when you pass.','strings of lanterns',[lant])
+]],
+['Choose a Creature',[
+O('g5','🦋','Butterflies','Wings painted with tiny stained-glass windows.','fluttering butterflies',[],'bf'),
+O('g6','🦌','Gentle Deer','A shy visitor that walks without a sound.','a gentle deer',[['🦌',630,430,88,'a']])
+]],
+['Choose a Final Touch',[
+O('g7','🌸','Cherry Blossoms','Petals fall like slow pink snow.','drifting cherry blossoms',[bloom],'pet'),
+O('g8','🌹','Roses','Velvet blooms climbing every stone.','climbing roses',[['🌹',70,420,64,'c'],['🌹',740,430,64,'c']],'rose')
+]]
+]}
+};
+
+let S,r,HP=3,DORM={};
+let missFn=()=>true;const miss=()=>missFn();
+
+function show(id,pre){
+const cur=document.querySelector('.screen.on');
+const nx=()=>{
+if(pre)pre();
+const e=$('#'+id);
+e.hidden=false;
+scrollTo(0,0);
+requestAnimationFrame(()=>requestAnimationFrame(()=>e.classList.add('on')));
+};
+if(cur){
+cur.classList.remove('on');
+setTimeout(()=>{cur.hidden=true;nx();},380);
+}else{nx();}
+}
+
+function round(){
+const el=$('#round'),isE=r==1;
+let h=`<div class="top"><div class="lab">ROUND ${r} OF 5</div>${hrt()}<div class="bar"><i style="width:${(r-1)/5*100+10}%"></i></div>`;
+if(!isE)h+=`<div class="pv">${scene(S,'p')}</div>`;
+const q=isE?'Where will your grove begin?':ENV[S.env].r[r-2][0];
+h+=`<h2>${q}</h2></div><div class="cards ${isE?'e':''}">`;
+if(isE){
+h+=Object.keys(ENV).map(k=>`<button class="card" data-k="${k}"><div class="art">${scene({env:k,c:[]},'e'+k)}</div><h3>${ENV[k].n}</h3><p>${ENV[k].d}</p></button>`).join('');
+}else{
+h+=ENV[S.env].r[r-2][1].map((o,i)=>`<button class="card" data-i="${i}"><div class="ic">${o.ic}</div><h3>${o.n}</h3><p>${o.d}</p></button>`).join('');
+}
+el.innerHTML=h+'</div>';
+el.querySelectorAll('.card').forEach(b=>b.onclick=()=>{
+el.querySelectorAll('.card').forEach(x=>x.disabled=true);
+b.classList.add('sel');
+setTimeout(()=>{
+if(isE){
+S.env=b.dataset.k;
+document.body.dataset.env=S.env;
+adv();
+}else{
+const o=ENV[S.env].r[r-2][1][+b.dataset.i];
+S.c.push(o);
+MG[o.id]?show('mini',()=>mini(o)):adv();
+}
+},520);
+});
+}
+
+const adv=()=>{r++;r>5?show('final',fin):show('round',round);};
+
+function fin(){S.hp=HP;S.dm=DORM;const T=TIER[HP],dm=S.c.filter(o=>DORM[o.id]).map(o=>o.ph);
+const ph=S.c.map(o=>o.ph),l=ph.slice(0,-1).join(', ')+', and '+ph.at(-1);
+$('#final').innerHTML=`<h1>Welcome to Your Enchanted Grove</h1>
+<div class="fin" id="fs">${scene(S,'f')}</div>
+<p>Your grove, born in the ${ENV[S.env].ph}, is filled with ${l}.</p>
+<div class="tier"><h3>${T.t}</h3>${hrt()}<ul>${T.l.map(x=>`<li>${x}</li>`).join('')}${HP<=1&&dm.length?`<li>💤 Sleeping: ${dm.join(', ')}</li>`:''}</ul></div>
+<div class="row"><button class="btn" id="ag">CREATE ANOTHER GROVE</button><button class="btn alt" id="sv">SAVE MY GROVE</button></div>`;
+$('#ag').onclick=()=>{HP=3;DORM={};S={env:null,c:[]};r=1;delete document.body.dataset.env;show('start');};
+$('#sv').onclick=save;
+}
+
+function save(){
+const svg=scene(S,'x').replace(' preserveAspectRatio="xMidYMid slice"','');
+const im=new Image;
+im.onload=()=>{
+const c=document.createElement('canvas');
+c.width=1600;c.height=1000;
+c.getContext('2d').drawImage(im,0,0,1600,1000);
+c.toBlob(async b=>{
+try{
+const d=window.claude?await window.claude.use('downloads'):null;
+if(d){
+try{await d.save({filename:'my-enchanted-grove.png',data:b});return;}
+catch(e){if(e&&e.code=='declined')return;}
+}
+}catch(e){}
+$('#mi').src=c.toDataURL('image/png');
+$('#md').classList.add('o');
+},'image/png');
+};
+im.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+}
+
+const D=ms=>new Promise(r=>setTimeout(r,ms)),rn=n=>Math.random()*n|0,shf=a=>[...a].sort(()=>Math.random()-.5);
+let tok=0;
+
+const sp=(pl,x,y)=>{
+for(let i=0;i<10;i++){
+const s=document.createElement('i');
+s.className='sp';s.textContent='✨';
+s.style.cssText=`left:${x}px;top:${y}px;--x:${rn(140)-70}px;--y:${rn(140)-90}px`;
+pl.appendChild(s);
+setTimeout(()=>s.remove(),1100);
+}
+};
+
+const bx=(e,pl)=>{
+const a=pl.getBoundingClientRect(),b=e.getBoundingClientRect();
+return[b.left-a.left+b.width/2,b.top-a.top+b.height/2];
+};
+
+const E={};
+
+E.seq=async(pl,say,win,ok,c)=>{
+const n=c.it.length;
+pl.innerHTML=`<div class="clue" id="pt"></div><div class="tiles">${c.it.map((e,i)=>`<button class="tk ${c.k||''}" data-i="${i}" style="--h:${i*70}deg">${e}</button>`).join('')}</div>`;
+const tk=[...pl.querySelectorAll('.tk')],
+lit=async(i,ms=550)=>{tk[i].classList.add('lit');await D(ms);tk[i].classList.remove('lit');await D(160);};
+let st=0,seq=[],inp=0,busy=true;
+const play=async()=>{
+busy=true;inp=0;
+say('Watch closely…');
+if(c.show){
+$('#pt').textContent=seq.map(i=>c.it[i]).join('  →  ');
+await D(2200+seq.length*700);
+$('#pt').textContent='';
+}else{
+for(const i of seq){if(!ok())return;await lit(i);}
+}
+say('Your turn!');
+busy=false;
+};
+const nx=()=>{
+if(c.ext&&seq.length)seq.push(rn(n));
+else seq=Array.from({length:c.L[st]},()=>rn(n));
+play();
+};
+tk.forEach(b=>b.onclick=async()=>{
+if(busy||!ok())return;
+const i=+b.dataset.i;
+if(i==seq[inp]){
+lit(i,250);
+if(++inp==seq.length){
+busy=true;
+if(++st==c.L.length)return win();
+say('Beautiful! Now a longer one…');
+await D(900);
+nx();
+}
+}else{
+busy=true;
+b.classList.add('bad');
+if(miss())return;
+say('Not quite — watch again.');
+await D(900);
+b.classList.remove('bad');
+play();
+}
+});
+nx();
+};
+
+E.ord=async(pl,say,win,ok,c)=>{
+let st=0;
+const stage=()=>{
+const L=c.L[st];
+let pool,tg;
+if(c.m=='trail'){
+pool=[];
+for(let k=0;k<L;k++)pool.push({n:'d'+k,e:'👣',gl:1,x:8+k*(72/L)+rn(6),y:78-k*(62/L)});
+tg=[...pool];
+for(let k=0;k<L+4;k++)pool.push({n:'x'+k,e:'🐾',x:rn(84)+4,y:rn(76)+4});
+}else if(c.ff){
+tg=Array.from({length:L},()=>c.it[rn(c.it.length)]);
+pool=[...tg,...Array.from({length:3+st},()=>c.it[rn(c.it.length)])].map(o=>({...o}));
+}else{
+pool=c.it.slice(0,c.grow?Math.min(c.it.length,L+3):c.it.length);
+tg=shf(pool).slice(0,L);
+}
+const sl=shf([...Array(12).keys()]);
+pool.forEach((o,i)=>{
+if(o.x==null){
+const s=sl[i%12];
+o.x=6+(s%4)*23+rn(5);
+o.y=6+(s/4|0)*30+rn(8);
+}
+});
+pl.innerHTML=`<div class="clue" id="cl"></div><div class="arena" id="ar"></div>`;
+let idx=0,ht;
+const btns=pool.map(o=>{
+const b=document.createElement('button');
+b.className='tg'+(o.gl?' gl':'')+(c.ff?' ffd':'');
+b.innerHTML=o.e;
+b.style.left=o.x+'%';
+b.style.top=o.y+'%';
+if(c.ff)b.style.animationDelay='-'+rn(5)+'s';
+$('#ar').appendChild(b);
+b.onclick=()=>{
+if(!ok())return;
+if(o.n==tg[idx].n){
+sp(pl,...bx(b,pl));
+b.classList.add('done');
+if(c.ff)b.style.display='none';
+idx++;
+clearTimeout(ht);
+if(idx==L){
+if(++st==c.L.length)return win();
+say('Wonderful! One more…');
+setTimeout(stage,1000);
+}else{hint();}
+}else{
+b.classList.add('bad');
+if(miss())return;
+say(c.bad||'Not that one — try again.');
+if(c.ff){
+b.style.visibility='hidden';
+setTimeout(()=>b.style.visibility='',900);
+}else{
+setTimeout(()=>b.classList.remove('bad'),500);
+}
+}
+};
+return b;
+});
+const hint=()=>{
+if(c.m=='glow'){
+clearTimeout(ht);
+ht=setTimeout(()=>{
+const t=tg[idx];
+if(t)btns[pool.findIndex(o=>o.n==t.n)].classList.add('hint');
+},1300);
+}
+};
+if(c.m=='glow'){
+say('Clear the obstacle that glows, one at a time.');
+hint();
+}else if(c.m=='trail')say('Follow the glowing deer prints from the bottom up. Ignore other tracks 🐾.');
+else{
+$('#cl').innerHTML=c.cl(tg);
+if(c.m=='flash'){
+say('Memorize the order…');
+setTimeout(()=>{$('#cl').innerHTML='';say('Now do it from memory!');},2500+L*900);
+}else{say('Follow the clue.');}
+}
+};
+stage();
+};
+
+E.lit=async(pl,say,win,ok,c)=>{
+let sc=0,t=c.t,u=0;
+pl.innerHTML='<div class="arena" id="ar"></div><div class="pr"><i id="pb"></i></div>';
+const ar=$('#ar'),sl=shf([...Array(12).keys()]);
+const mk=p=>{
+const b=document.createElement('button');
+b.className='tg';
+b.textContent=c.e;
+const s=p??sl[u++%12];
+b.style.left=5+(s%4)*23+rn(6)+'%';
+b.style.top=4+(s/4|0)*30+rn(8)+'%';
+ar.appendChild(b);
+return b;
+};
+const fx=c.sp?[]:Array.from({length:c.n},()=>mk());
+say(`Catch ${c.need}!`);
+while(sc<c.need&&ok()){
+let b;
+if(c.sp)b=mk(rn(12));
+else{
+if(c.grow&&sc&&sc%3==0&&fx.length<10&&!fx.g)fx.push(mk());
+b=fx[rn(fx.length)];
+}
+b.classList.add('lit');
+let hit=false;
+await new Promise(res=>{
+b.onclick=()=>{hit=true;res();};
+setTimeout(res,t);
+});
+b.classList.remove('lit');
+b.onclick=null;
+if(hit){
+sc++;
+say('');
+sp(pl,...bx(b,pl));
+$('#pb').style.width=sc/c.need*100+'%';
+t=Math.max(c.min,t*.9);
+}else{
+if(!miss())say('Too slow — you can do it!');
+}
+if(c.sp)b.remove();
+await D(250);
+}
+if(ok())win();
+};
+
+E.fall=(pl,say,win,ok,c)=>{
+let g=0,d=c.d;
+pl.innerHTML='<div class="arena" id="ar"></div><div class="pr"><i id="pb"></i></div>';
+const ar=$('#ar');
+say(`Collect ${c.need} glowing petals — skip the plain ones.`);
+const iv=setInterval(()=>{
+if(!ok()||g>=c.need)return clearInterval(iv);
+const m=Math.random()<Math.max(.35,.8-g*.05),b=document.createElement('button');
+b.className='pt'+(m?' mg2':'');
+b.textContent=m?c.e:c.e2;
+b.style.left=rn(88)+'%';
+b.style.animationDuration=d+'ms';
+b.onclick=()=>{
+if(m){
+g++;
+sp(pl,...bx(b,pl));
+d=Math.max(2800,d-150);
+}else{
+g=Math.max(0,g-1);
+if(!miss())say('That was just an ordinary petal.');
+}
+$('#pb').style.width=g/c.need*100+'%';
+b.remove();
+if(g>=c.need){clearInterval(iv);win();}
+};
+ar.appendChild(b);
+setTimeout(()=>b.remove(),d+100);
+},c.iv);
+};
+
+E.path=(pl,say,win,ok,c)=>{
+const ans=Array.from({length:c.d},()=>rn(c.b));
+let lv=0,bad={};
+const rd=()=>{
+let h=`<div class="lv"><span class="nd on">${c.goal}</span></div>`;
+for(let l=c.d-1;l>=0;l--){
+h+='<div class="lv">'+Array.from({length:c.b},(_,i)=>`<button class="nd ${l<lv&&ans[l]==i?'on':''} ${c.cl&&l==lv&&ans[l]==i&&(c.cl==1||lv>=1)?'cl':''} ${bad[l+'_'+i]?'bad':''}" data-l="${l}" data-i="${i}" ${l!=lv||bad[l+'_'+i]?'disabled':''}>${c.n}</button>`).join('')+'</div>';
+}
+pl.innerHTML=h+`<div class="lv">${c.start}</div>`;
+pl.querySelectorAll('.nd[data-l]').forEach(b=>b.onclick=()=>{
+if(!ok())return;
+const l=+b.dataset.l,i=+b.dataset.i;
+if(ans[l]==i){
+lv++;
+say('The way opens…');
+if(lv==c.d){rd();return win();}
+}else if(miss()){
+return;
+}else if(c.rs){
+lv=0;bad={};
+say('The branches tangle — the path resets.');
+}else{
+bad[l+'_'+i]=1;
+say('A dead end — that branch withers gently.');
+}
+rd();
+});
+};
+say('Choose a branch at each level, bottom to top.');
+rd();
+};
+
+E.cyc=(pl,say,win,ok,c)=>{
+const S=['🌙','⭐','🔥','💧','🍃'],tg=Array.from({length:4},()=>rn(5)),cur=tg.map(t=>(t+1+rn(4))%5);
+pl.innerHTML=`<p>Pattern:</p><div class="tiles">${tg.map(t=>`<span class="tk lit2">${S[t]}</span>`).join('')}</div><p>Tap each pillar to change its symbol:</p><div class="tiles" id="pi"></div>`;
+const rd=()=>{
+const p=$('#pi');
+p.innerHTML=cur.map((s,i)=>`<button class="tk ${s==tg[i]?'lit2':''}" data-i="${i}">${S[s]}</button>`).join('');
+p.querySelectorAll('.tk').forEach(b=>b.onclick=()=>{
+if(!ok())return;
+const i=+b.dataset.i,was=cur[i]==tg[i];
+cur[i]=(cur[i]+1)%5;
+if(was&&miss()){rd();return;}
+rd();
+if(cur.every((s,j)=>s==tg[j]))win();
+});
+};
+rd();
+};
+
+E.rot=(pl,say,win,ok,c)=>{
+const q=Array.from({length:9},()=>1+rn(3));
+pl.innerHTML='<div class="rg" id="rg"></div>';
+const g=$('#rg');
+say('Tap pieces to rotate them until the rune is whole.');
+q.forEach((v,i)=>{
+const b=document.createElement('button');
+b.className='rt';
+b.style.transform=`rotate(${v*90}deg)`;
+b.innerHTML=`<span style="left:${-(i%3)*72}px;top:${-(i/3|0)*72}px">ᚱ</span>`;
+b.onclick=()=>{
+if(!ok())return;
+if(q[i]==0&&miss())return;
+q[i]=(q[i]+1)%4;
+b.style.transform=`rotate(${q[i]*90}deg)`;
+if(q.every(x=>!x)){
+g.style.filter='drop-shadow(0 0 22px #ffd978)';
+win();
+}
+};
+g.appendChild(b);
+});
+};
+
+E.mt=(pl,say,win,ok,c)=>{
+const C=['#ff6fb5','#5ab6ff','#ffd24a','#a77bff','#5de0a0','#ff8a5c'];
+const C2=['#ff6fb5','#ff9ccd','#5ab6ff','#8fd0ff','#a77bff','#c9a8ff'];
+let st=0,sel=null;
+const run=()=>{
+const n=[3,4,5][st],cs=st==2?[C2[0],C2[1],C2[2],C2[3],C2[4]]:shf(C).slice(0,n);
+pl.innerHTML=`<div class="tiles">${cs.map(x=>`<button class="tk bf fl" data-c="${x}" style="--c:${x};animation-delay:-${rn(4)}s">🦋</button>`).join('')}</div><div class="tiles">${shf(cs).map(x=>`<button class="tk" data-c="${x}" style="--c:${x};box-shadow:0 0 22px ${x}">🌸</button>`).join('')}</div>`;
+const B=[...pl.querySelectorAll('.bf')],F=[...pl.querySelectorAll('.tk:not(.bf)')];
+B.forEach(b=>b.onclick=()=>{
+if(b.classList.contains('done'))return;
+B.forEach(x=>x.classList.remove('sel'));
+b.classList.add('sel');
+sel=b;
+say('Now tap the matching flower.');
+});
+F.forEach(f=>f.onclick=()=>{
+if(!ok()||f.classList.contains('done'))return;
+if(!sel)return say('Pick a butterfly first.');
+if(sel.dataset.c==f.dataset.c){
+sp(pl,...bx(f,pl));
+sel.classList.add('done');
+sel.classList.remove('sel','fl');
+sel.style.visibility='hidden';
+f.classList.add('done');
+f.textContent='🦋';
+sel=null;
+say('');
+if(B.every(x=>x.classList.contains('done'))){
+if(++st==3)return win();
+say('More butterflies arrive!');
+setTimeout(run,1100);
+}
+}else{
+f.classList.add('bad');
+if(miss())return;
+say('Not that blossom — try again.');
+setTimeout(()=>f.classList.remove('bad'),500);
+}
+});
+};
+run();
+};
+
+E.dec=(pl,say,win,ok,c)=>{
+const Q=[
+['The deer keeps glancing toward the 🌸 flowers.',[['🌿 Offer fresh leaves',0],['🔔 Ring a loud bell',0],['✨ Hold out a glowing flower',1]]],
+['The deer lowers its head toward a trickling 💧 stream.',[['🍎 Wave a shiny apple',0],['🤫 Sit quietly by the water',1],['🥁 Tap a drum',0]]],
+['A soft 🌙 glyph glows above the deer, and its ears tilt back.',[['🎺 Blow a trumpet',0],['🏃 Run closer',0],['🎶 Hum a gentle moonlit tune',1]]]
+];
+let st=0,p=0;
+const rd=()=>{
+const q=Q[st];
+pl.innerHTML=`<div class="trk"><span style="left:${4+p*26}%">🦌</span><b>🧚</b></div><p class="clue">${q[0]}</p><div class="tiles">${shf(q[1]).map(o=>`<button class="nd" data-k="${o[1]}">${o[0]}</button>`).join('')}</div>`;
+pl.querySelectorAll('.nd').forEach(b=>b.onclick=()=>{
+if(!ok())return;
+if(b.dataset.k=='1'){
+st++;p=st;
+if(st==3){say('');rd2();return win();}
+say('The deer steps closer…');
+rd();
+}else{
+p=Math.max(0,st-1);
+if(miss())return;
+say('The deer steps back a little. Look for clues.');
+rd();
+}
+});
+};
+const rd2=()=>{pl.querySelector('.trk span').style.left='72%';};
+rd();
+};
+
+const M=(t,i,w,f)=>({t,i,w,run:f});
+const Q=(f,c)=>(...a)=>f(...a,c);
+const FF=(e,n,c)=>({e:`<b style="color:${c}">●</b>`,n});
+const hs=['moon','star','flower','mushroom','butterfly'];
+const hi=['🌙','⭐','🌸','🍄','🦋'];
+
+const MG={
+w1:M('Temple Memory Runes','Runes glow in a sequence. Watch, then tap them in the same order.','The temple stones hum — the Forgotten Temple has awakened!',Q(E.seq,{it:['ᚠ','ᚢ','ᚦ','ᚨ','ᚱ','ᚲ'],L:[3,4,5],k:'rn'})),
+w2:M('Whispering Roots','Find the way from the entrance to the glowing heart of the tree. Tap one root at each fork — dead ends only wither gently.','The roots part — you reached the heart of the Ancient Hollow Tree!',Q(E.path,{d:3,b:3,n:'🌱',goal:'🌟',start:'🚪 Entrance'})),
+w3:M('Crystal Sequence','Crystals light up in order. Repeat it — each success adds one more crystal.','The crystals ring out in harmony!',Q(E.seq,{it:['💎','🔷','🔮','💠'],L:[3,4,5,6],ext:1,k:'cr'})),
+w4:M('Mushroom Hop','Tap the glowing mushroom before it fades. They get quicker!','The mushrooms bounce with joy!',Q(E.lit,{e:'🍄',n:6,t:1500,min:700,need:8})),
+w5:M('Follow the Footprints','Find the deer’s glowing prints and tap them in order along the trail. Other tracks are decoys.','You followed the trail — the Ancient Forest Deer is near!',Q(E.ord,{m:'trail',L:[3,4,5]})),
+w6:M('Wolf’s Howl','The wolf howls in glowing symbols. Repeat the pattern. No sound needed.','The wolf answers with a silver howl!',Q(E.seq,{it:['🌕','🌙','⭐','💫','🔵'],L:[3,4,5,6],k:'wf'})),
+w7:M('Catch the Moonlight','Tap the pools of moonlight before they fade away.','Moonlight pours through the canopy!',Q(E.lit,{e:'🌙',sp:1,t:1500,min:600,need:9})),
+w8:M('Rune Restoration','Tap the broken pieces to rotate them until the ancient rune is whole. Turning an upright piece counts as a slip.','The rune blazes with restored power!',E.rot),
+m1:M('Witch’s Potion','Memorize the recipe, then add the ingredients to the cauldron in order. Wrong ones just fizzle.','The cauldron glows — the potion is perfect! 🧪',Q(E.ord,{m:'flash',it:[{e:'🍄',n:'glowing mushroom'},{e:'💧',n:'moonwater'},{e:'✨',n:'firefly dust'},{e:'🍃',n:'magic leaf'},{e:'💎',n:'crystal'},{e:'🐸',n:'frog toe'}],L:[3,4],cl:t=>'Recipe: '+t.map(x=>x.e+' '+x.n).join(' → '),bad:'💥 Bloop! The cauldron burps purple smoke.'})),
+m2:M('Ruins Alignment','Tap each pillar to change its symbol until all match the pattern. Turning a matched pillar away counts as a slip.','The ruins awaken with a pulse of light!',E.cyc),
+m3:M('Mushroom Glow','Tap the glowing mushroom to collect its spores. More mushrooms appear and the glow gets shorter.','You gathered enough spores!',Q(E.lit,{e:'🍄',n:3,grow:1,t:1700,min:650,need:9})),
+m4:M('Twisted Branches','Climb from the roots to the glowing leaf. A wrong branch resets your path. The right way glows faintly as you climb.','You reached the glowing leaf!',Q(E.path,{d:4,b:3,rs:1,cl:2,n:'🌿',goal:'🍃',start:'🌳 Roots'})),
+m5:M('Firefly Gathering','Memorize the glow colors, then tap fireflies of those colors in order.','The fireflies gather and light up the swamp!',Q(E.ord,{m:'flash',ff:1,it:[FF('','Gold','#ffd24a'),FF('','Blue','#5ab6ff'),FF('','Purple','#b07cff')],L:[3,4,5],cl:t=>t.map(x=>x.e+' '+x.n).join(' → ')})),
+m6:M('Frog Spirit Rhythm','The frogs perform a sequence. Tap them in the same order. No sound needed.','All the frog spirits glow together!',Q(E.seq,{it:['🐸','🐸','🐸','🐸'],L:[3,4,5,6],k:'fg'})),
+g1:M('Everbloom — Grow the Flowers','Study the flower pattern. When it hides, tap the flowers in the same order.','The Flower Circle has awakened!',Q(E.seq,{it:['🌸','🌼','🌷','🌹'],L:[3,4,5],show:1})),
+g2:M('Light the Fairy Village','Read the clue, then light the fairy houses in the order it says.','The Fairy Village is glowing again!',Q(E.ord,{m:'clue',grow:1,it:hs.map((n,i)=>({e:`<small>${hi[i]}</small>🏡`,n})),L:[2,3,3],cl:t=>'First light the house beneath the '+t.map(x=>x.n).join(', then the ')+'.'})),
+g3:M('Fountain of Wishes — Restore the Magic','Clear the blocked streams in the right order. The next obstacle begins to glow when you pause.','The Fountain of Wishes is flowing with magic!',Q(E.ord,{m:'glow',it:[{e:'🍃',n:'leaf'},{e:'🪨',n:'stone'},{e:'🌿',n:'vine'},{e:'🪵',n:'log'},{e:'🍂',n:'debris'}],L:[3,4,5]})),
+g4:M('Twilight Lanterns — Light the Garden Path','Watch the lanterns light up, then repeat the order.','The Lantern Path has come alive!',Q(E.seq,{it:hi,L:[3,4,5],k:'ln'})),
+g5:M('Guide the Butterflies','Tap a butterfly, then the flower of the same color to guide it home.','The butterflies have found their blossoms!',E.mt),
+g6:M('Befriend the Gentle Deer','Watch the deer and the scene for clues, then choose the kindest action.','The Gentle Deer trusts you!',E.dec),
+g7:M('Catch the Falling Blossoms','Tap the glowing petals. Plain petals are decoys!','The garden is filled with enchanted blossoms!',Q(E.fall,{e:'🌸',e2:'🌸',need:10,d:6500,iv:900})),
+g8:M('Grow the Enchanted Rose Vines','Grow the vine upward. Follow the glowing leaves to the healthiest branch.','The enchanted roses are in full bloom!',Q(E.path,{d:5,b:3,cl:1,n:'🌿',goal:'🌹',start:'🌱 Seed'}))
+};
+
+function mini(o){
+const g=MG[o.id],el=$('#mini'),t=++tok;
+let over=false,MS=0;const LIM=4;
+el.innerHTML=`<div class="top"><div class="lab">ROUND ${r} OF 5</div>${hrt()}<div class="bar"><i style="width:${(r-1)/5*100+10}%"></i></div></div>
+<div class="mg">
+<h2>${g.t}</h2>
+<p class="ins" id="in">${g.i} <em>Four slips and the Grove's magic weakens.</em></p>
+<div class="slips" id="sl"></div>
+<div class="play" id="pl"><div class="ic" style="margin-top:50px">${o.ic}</div></div>
+<div class="msg" id="mm"></div>
+<div class="row"><button class="btn" id="st">START</button><button class="btn alt" id="ct" hidden>CONTINUE</button></div>
+</div>`;
+const pl=$('#pl'),say=m=>$('#mm').textContent=m,
+win=()=>{
+if(over)return;over=true;
+if(t!=tok)return;
+say('✨ '+g.w);
+pl.classList.add('won');
+for(let i=0;i<5;i++)setTimeout(()=>sp(pl,pl.clientWidth*(.15+i*.18),pl.clientHeight/2),i*150);
+$('#ct').hidden=false;
+};
+const pips=()=>{$('#sl').innerHTML=Array.from({length:LIM},(_,i)=>`<span class="${i<LIM-MS?'':'lost'}">🍃</span>`).join('');};
+pips();
+const fail=()=>{
+over=true;tok++;
+HP=Math.max(0,HP-1);DORM[o.id]=1;
+document.querySelector('#mini .hearts').outerHTML=hrt();
+say("💔 The Grove's magic weakens...");
+pl.classList.add('lost');
+$('#ct').hidden=false;
+};
+missFn=()=>{
+if(over||t!=tok)return true;
+MS++;pips();
+if(MS>=LIM){fail();return true;}
+return false;
+};
+$('#st').onclick=function(){
+this.hidden=true;
+$('#in').style.display='none';
+pl.innerHTML='';
+g.run(pl,say,win,()=>t==tok);
+};
+$('#ct').onclick=()=>{tok++;adv();};
+}
+
+$('#mc').onclick=()=>$('#md').classList.remove('o');
+
+$('#go').onclick=()=>{HP=3;DORM={};S={env:null,c:[]};r=1;show('round',round);};
+
+(function(){
+let h='';
+for(let i=0;i<26;i++)h+=`<div class="ff" style="left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:-${Math.random()*9}s,-${Math.random()*3}s"></div>`;
+$('#ffs').innerHTML=h;
+$('#sbg').innerHTML=scene({env:'woods',c:[{fx:'fire',el:[]}]},'s').replace('width="800" height="500"','width="100%" height="100%"');
+})();
+
+S={env:null,c:[]};
+r=1;
+</script>
+</body>
+</html>
