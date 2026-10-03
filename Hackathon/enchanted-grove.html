@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Enchanted Grove</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Metamorphous&family=Mountains+of+Christmas:wght@400;700&display=swap">
+
+    <style>
+        :root {
+            --ink: #f4edd3;
+            --mute: #c4c9b4;
+            --gold: #ffd978;
+            --sage: #a9c4a0;
+            --lav: #b9a7ee;
+            --sky: #8fd0e6;
+            --deep: #0b1f1a;
+            --glass: rgba(14,32,30,.62);
+            --line: rgba(255,217,120,.38);
+            color-scheme: dark;
+            box-sizing: border-box;
+            padding-top: env(safe-area-inset-top,0px);
+            padding-bottom: env(safe-area-inset-bottom,0px);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-padding-top: env(safe-area-inset-top,0px);
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--ink);
+            font: 17px/1.55 Metamorphous,Georgia,serif;
+            background: radial-gradient(ellipse at 50% 0,#27406b 0,#142b3a 38%,#0b1f1a 80%);
+            transition: background 1.2s;
+            overflow-x: hidden;
+        }
+
+        body[data-env=marsh] {
+            background: radial-gradient(ellipse at 50% 0,#4a3585 0,#1d1b45 42%,#0a1a26 85%);
+        }
+
+        body[data-env=garden] {
+            background: radial-gradient(ellipse at 50% 0,#a4568f 0,#4d3d77 40%,#1b2f2a 85%);
+        }
+
+        body[data-env=woods] {
+            background: radial-gradient(ellipse at 50% 0,#17667a 0,#0d3a47 42%,#081b1a 85%);
+        }
+
+        h1,
+        h2,
+        h3,
+        .big {
+            font-family: 'Mountains of Christmas',Georgia,cursive;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1.05;
+        }
+
+        .screen {
+            position: relative;
+            z-index: 2;
+            min-height: 100vh;
+            padding: 24px 16px 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+            transform: translateY(14px);
+            transition: opacity .4s,transform .4s;
+        }
+
+        .screen.on {
+            opacity: 1;
+            transform: none;
+        }
+
+        .screen[hidden] {
+            display: none;
+        }
+
+        #ffs {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .ff {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #ffe9a0;
+            box-shadow: 0 0 12px 4px rgba(255,225,130,.7);
+            animation: dr 9s ease-in-out infinite alternate,bl 3s ease-in-out infinite;
+        }
+
+        @keyframes dr {
+            to {
+                transform: translate(40px,-60px);
+            }
+        }
+
+        @keyframes bl {
+            50% {
+                opacity: .25;
+            }
+        }
+
+        #start {
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        #start .bg {
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            opacity: .85;
+        }
+
+        #start .bg svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        #start:after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            background: radial-gradient(ellipse at center,rgba(5,16,16,.65),rgba(5,16,16,.1) 70%);
+        }
+
+        #start h1 {
+            font-size: clamp(3rem,13vw,7.5rem);
+            color: var(--gold);
+            text-shadow: 0 0 30px rgba(255,217,120,.55),0 4px 0 #5a3d12;
+        }
+
+        #start p {
+            font-size: clamp(1.05rem,3.5vw,1.5rem);
+            color: var(--ink);
+            margin: 12px 0 28px;
+            text-shadow: 0 2px 8px #000;
+        }
+
+        .btn {
+            font: inherit;
+            font-size: 1.15rem;
+            color: #2b1d05;
+            background: linear-gradient(#ffe9a0,#f2b84a);
+            border: 0;
+            border-radius: 99px;
+            padding: 14px 34px;
+            cursor: pointer;
+            box-shadow: 0 0 28px rgba(255,217,120,.55),0 4px 0 #8a5d14;
+            letter-spacing: .04em;
+            transition: transform .2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px) scale(1.03);
+        }
+
+        .btn.alt {
+            background: linear-gradient(#e0d6ff,#a893e8);
+            box-shadow: 0 0 22px rgba(185,167,238,.5),0 4px 0 #5c4a9a;
+        }
+
+        .btn:focus-visible,
+        .card:focus-visible {
+            outline: 3px solid var(--sky);
+            outline-offset: 3px;
+        }
+
+        .deco {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            font-size: clamp(2rem,8vw,4rem);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .deco span {
+            display: inline-block;
+            transform-origin: 50% 100%;
+            animation: sw 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes sw {
+            from {
+                transform: rotate(-7deg);
+            }
+
+            to {
+                transform: rotate(7deg);
+            }
+        }
+
+        .top {
+            width: 100%;
+            max-width: 900px;
+            text-align: center;
+        }
+
+        .lab {
+            letter-spacing: .2em;
+            color: var(--gold);
+            font-size: .9rem;
+        }
+
+        .bar {
+            height: 10px;
+            border-radius: 9px;
+            background: rgba(255,255,255,.14);
+            margin: 8px auto 16px;
+            overflow: hidden;
+            max-width: 420px;
+        }
+
+        .bar i {
+            display: block;
+            height: 100%;
+            background: linear-gradient(90deg,var(--sage),var(--gold));
+            border-radius: 9px;
+            transition: width .6s;
+        }
+
+        .pv {
+            width: 100%;
+            max-width: 520px;
+            border-radius: 22px;
+            overflow: hidden;
+            border: 2px solid var(--line);
+            margin: 0 auto 14px;
+            aspect-ratio: 16/8;
+            box-shadow: 0 0 30px rgba(0,0,0,.4);
+        }
+
+        .pv svg,
+        .art svg,
+        .fin svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        h2 {
+            font-size: clamp(1.9rem,6vw,3rem);
+            color: var(--gold);
+            margin-bottom: 16px;
+            text-shadow: 0 0 18px rgba(255,217,120,.35);
+        }
+
+        .cards {
+            display: grid;
+            gap: 16px;
+            width: 100%;
+            max-width: 900px;
+            grid-template-columns: repeat(2,1fr);
+            margin: 0 auto;
+        }
+
+        .cards.e {
+            grid-template-columns: repeat(3,1fr);
+        }
+
+        .card {
+            font: inherit;
+            color: var(--ink);
+            text-align: center;
+            background: var(--glass);
+            border: 2px solid var(--line);
+            border-radius: 26px;
+            padding: 18px 14px;
+            cursor: pointer;
+            backdrop-filter: blur(6px);
+            transition: transform .25s,border-color .25s,box-shadow .25s;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            border-color: var(--gold);
+            box-shadow: 0 0 30px rgba(255,217,120,.35);
+        }
+
+        .card.sel {
+            transform: scale(1.04);
+            border-color: #fff;
+            box-shadow: 0 0 44px rgba(255,255,255,.6);
+        }
+
+        .card h3 {
+            font-size: 1.7rem;
+            color: var(--gold);
+            margin: 6px 0;
+        }
+
+        .card p {
+            margin: 0;
+            color: var(--mute);
+            font-size: .92rem;
+            line-height: 1.45;
+        }
+
+        .ic {
+            font-size: clamp(3rem,10vw,5rem);
+            line-height: 1.1;
+            filter: drop-shadow(0 0 16px rgba(255,217,120,.6));
+        }
+
+        .art {
+            border-radius: 18px;
+            overflow: hidden;
+            aspect-ratio: 16/10;
+            margin-bottom: 8px;
+        }
+
+        .fin {
+            width: 100%;
+            max-width: 900px;
+            border-radius: 26px;
+            overflow: hidden;
+            border: 3px solid var(--gold);
+            aspect-ratio: 16/10;
+            box-shadow: 0 0 60px rgba(255,217,120,.35);
+            margin: 6px 0 18px;
+        }
+
+        #final h1 {
+            font-size: clamp(2.3rem,8vw,4.4rem);
+            color: var(--gold);
+            text-align: center;
+            text-shadow: 0 0 24px rgba(255,217,120,.5);
+        }
+
+        #final p {
+            max-width: 640px;
+            text-align: center;
+            margin: 10px auto 22px;
+            font-size: 1.1rem;
+        }
+
+        .row {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .fl {
+            animation: fl 5s ease-in-out infinite alternate;
+        }
+
+        @keyframes fl {
+            to {
+                transform: translate(10px,-16px);
+            }
+        }
+
+        .bk {
+            animation: bl 2.6s ease-in-out infinite;
+        }
+
+        #md {
+            position: fixed;
+            inset: 0;
+            z-index: 9;
+            background: rgba(5,12,12,.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            text-align: center;
+        }
+
+        #md.o {
+            display: flex;
+        }
+
+        #md div {
+            max-width: 560px;
+        }
+
+        #md img {
+            width: 100%;
+            border-radius: 16px;
+            border: 2px solid var(--gold);
+        }
+
+        #md p {
+            margin: 10px 0;
+        }
+
+        @media(max-width:640px) {
+            .cards.e {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 12px 8px;
+                border-radius: 20px;
+            }
+
+            .card h3 {
+                font-size: 1.35rem;
+            }
+
+            .card p {
+                font-size: .8rem;
+            }
+        }
+
+        @media (prefers-reduced-motion:reduce) {
+            * {
+                animation: none!important;
+                transition: none!important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="ffs"></div>
+
+    <section class="screen on" id="start">
+        <div class="bg" id="sbg"></div>
+
+        <h1>ENCHANTED GROVE</h1>
+        <p>Create a world of your own magic.</p>
+        <button class="btn" id="go">START GAME</button>
+
+        <div class="deco">
+            <span>🌿</span>
+            <span style="animation-delay:-1s">🍄</span>
+            <span style="animation-delay:-2s">🌱</span>
+            <span style="animation-delay:-.5s">🍄</span>
+            <span style="animation-delay:-3s">🌿</span>
+            <span style="animation-delay:-1.5s">🍃</span>
+        </div>
+    </section>
+
+    <section class="screen" id="round" hidden></section>
+    <section class="screen" id="final" hidden></section>
+
+    <div id="md">
+        <div>
+            <img id="mi" alt="Your enchanted grove">
+            <p>Press and hold the picture (or right-click it) to save your grove.</p>
+            <button class="btn" id="mc">Close</button>
+        </div>
+    </div>
+
+    <script>
+        const $=s=>document.querySelector(s);
+        const EM='font-family="Apple Color Emoji,Segoe UI Emoji,Noto Color Emoji,sans-serif"';
+
+        let sd=1;
+
+        const R=()=>(sd=sd*16807%2147483647)/2147483647,
+            rr=(a,b)=>a+R()*(b-a);
+
+        const PAL={
+            woods:{
+                sky:['#06222e','#0f4a5c','#1c7a82'],
+                h:'#0e4150',
+                g:'#0d3b3a',
+                g2:'#092a2b'
+            },
+
+            marsh:{
+                sky:['#1a1038','#46307a','#2d7f8f'],
+                h:'#3b3470',
+                g:'#12263a',
+                g2:'#0b1a2a',
+                w:'#1fb3b8'
+            },
+
+            garden:{
+                sky:['#3b5fa0','#e98fb0','#ffd68a'],
+                h:'#7bb072',
+                g:'#5f9a4b',
+                g2:'#3f7a3a'
+            }
+        };
+
+        const tw=(x,y,h,c)=>`<path d="M${x} ${y}C${x-30} ${y-h*.3} ${x+40} ${y-h*.5} ${x} ${y-h*.8}M${x} ${y-h*.55}C${x+30} ${y-h*.65} ${x+50} ${y-h*.75} ${x+45} ${y-h}M${x} ${y-h*.7}C${x-35} ${y-h*.8} ${x-45} ${y-h*.95} ${x-40} ${y-h*1.05}" stroke="${c}" stroke-width="14" stroke-linecap="round" fill="none"/>`;
+
+        const GL={
+            a:'#ffd978',
+            b:'#7fe9ff',
+            c:'#ffa6d6'
+        };
+
+        function base(env,u){
+            const P=PAL[env];
+
+            let s=`<defs><linearGradient id="sk${u}" x1="0" y1="0" x2="0" y2="1">${P.sky.map((c,i)=>`<stop offset="${i/2}" stop-color="${c}"/>`).join('')}</linearGradient>${Object.keys(GL).map(k=>`<radialGradient id="g${k}${u}"><stop offset="0" stop-color="${GL[k]}" stop-opacity=".85"/><stop offset="1" stop-color="${GL[k]}" stop-opacity="0"/></radialGradient>`).join('')}</defs><rect width="800" height="500" fill="url(#sk${u})"/>`;
+
+            if(env=='garden'){
+                s+=`<circle cx="620" cy="270" r="170" fill="url(#ga${u})"/><ellipse cx="160" cy="90" rx="110" ry="22" fill="#ffd0e0" opacity=".5"/><ellipse cx="420" cy="60" rx="90" ry="16" fill="#ffe3c0" opacity=".45"/>`;
+            }
+            else {
+                for(let i=0;i<40;i++)
+                    s+=`<circle cx="${rr(0,800)}" cy="${rr(0,230)}" r="${rr(.6,1.8)}" fill="#fff" opacity="${rr(.3,.9)}"/>`;
+            }
+
+            if(env=='marsh')
+                s+=`<path d="M0 330L90 250L180 310L300 220L420 300L540 240L660 305L800 235V340H0Z" fill="${P.h}" opacity=".75"/>`;
+            else
+                s+=`<path d="M0 330Q120 250 240 305T480 295T800 285V500H0Z" fill="${P.h}"/>`;
+
+            if(env=='woods'){
+                [[40,110],[235,90],[585,100],[765,120]].forEach(([x,w])=>
+                    s+=`<path d="M${x-w/2} 500C${x-w*.35} 300 ${x-w*.3} 100 ${x-w*.2} 0H${x+w*.2}C${x+w*.3} 100 ${x+w*.35} 300 ${x+w/2} 500Z" fill="#103a45"/><path d="M${x+w*.05} 500C${x+w*.1} 300 ${x+w*.1} 100 ${x+w*.1} 0H${x+w*.2}C${x+w*.3} 100 ${x+w*.35} 300 ${x+w/2} 500Z" fill="#1d6a74" opacity=".5"/>`
+                );
+
+                for(let i=0;i<30;i++){
+                    const x=rr(0,800),
+                        l=rr(60,230),
+                        c=R()<.5?'#7fe9ff':'#ffd978';
+
+                    s+=`<line x1="${x}" y1="0" x2="${x}" y2="${l}" stroke="${c}" stroke-width="1.3" opacity=".6"/><circle class="bk" style="animation-delay:-${rr(0,3)}s" cx="${x}" cy="${l}" r="3" fill="${c}"/><circle cx="${x}" cy="${l*.6}" r="2" fill="${c}" opacity=".8"/>`;
+                }
+            }
+
+            if(env=='marsh')
+                s+=tw(90,430,330,'#0b1424')+tw(725,430,330,'#0b1424')+tw(250,360,150,'#1a2540');
+
+            if(env=='garden'){
+                for(let i=0;i<9;i++)
+                    s+=`<circle cx="${rr(0,800)}" cy="${rr(285,320)}" r="${rr(28,52)}" fill="${i%3?'#5e9a52':'#f2a3c4'}" opacity=".9"/>`;
+            }
+
+            s+=`<path d="M0 340Q200 320 400 340T800 335V500H0Z" fill="${P.g}"/>`;
+
+            if(env=='marsh'){
+                s+=`<path d="M0 362Q200 346 400 366T800 356V500H0Z" fill="${P.w}" opacity=".8"/>`;
+
+                for(let i=0;i<14;i++){
+                    const x=rr(0,740),
+                        y=rr(375,490);
+
+                    s+=`<line x1="${x}" y1="${y}" x2="${x+rr(30,70)}" y2="${y}" stroke="#d8ffff" stroke-width="2" opacity=".3"/>`;
+                }
+
+                for(let i=0;i<6;i++)
+                    s+=`<ellipse cx="${rr(40,760)}" cy="${rr(380,480)}" rx="22" ry="7" fill="#2f8a5a"/>`;
+
+                s+=`<ellipse cx="400" cy="340" rx="420" ry="26" fill="#dff" opacity=".1"/>`;
+            }
+            else {
+                s+=`<path d="M0 420Q250 400 500 425T800 415V500H0Z" fill="${P.g2}"/>`;
+            }
+
+            if(env=='woods')
+                for(let i=0;i<55;i++)
+                    s+=`<circle cx="${rr(0,800)}" cy="${rr(375,495)}" r="${rr(2,4.5)}" fill="${R()<.6?'#bff3f0':'#f7a8d0'}" opacity=".9"/>`;
+
+            if(env=='garden'){
+                for(let i=0;i<7;i++){
+                    const t=i/6;
+                    s+=`<ellipse cx="${400+Math.sin(i)*30}" cy="${495-t*135}" rx="${46-t*26}" ry="${12-t*6}" fill="#e4d8b8" opacity=".85"/>`;
+                }
+
+                for(let i=0;i<70;i++)
+                    s+=`<circle cx="${rr(0,800)}" cy="${rr(350,495)}" r="${rr(2,5)}" fill="${['#ff8fb8','#ffd24a','#c3a5ff','#fff'][i%4]}"/>`;
+            }
+
+            return s;
+        }
+
+        const fx={
+            fire:u=>{
+                let s='';
+
+                for(let i=0;i<22;i++){
+                    const x=rr(40,760),
+                        y=rr(130,430);
+
+                    s+=`<g class="fl" style="animation-delay:-${rr(0,5)}s"><circle cx="${x}" cy="${y}" r="10" fill="#ffe58a" opacity=".3"/><circle class="bk" style="animation-delay:-${rr(0,3)}s" cx="${x}" cy="${y}" r="3.2" fill="#fff3b0"/></g>`;
+                }
+
+                return s;
+            },
+
+            run:u=>{
+                let s='',
+                    g='ᚠᚢᚦᚨᚱᚲᚷᚹᛉᛟ';
+
+                for(let i=0;i<9;i++)
+                    s+=`<text class="fl" style="animation-delay:-${rr(0,5)}s" x="${rr(80,720)}" y="${rr(110,330)}" font-size="${rr(26,42)}" fill="#ffe08a" opacity=".92">${g[i]}</text>`;
+
+                return s;
+            },
+
+            bf:u=>{
+                let s='';
+
+                for(let i=0;i<8;i++)
+                    s+=`<text class="fl" style="animation-delay:-${rr(0,5)}s" x="${rr(60,740)}" y="${rr(170,380)}" font-size="${rr(28,40)}" ${EM}>🦋</text>`;
+
+                return s;
+            },
+
+            pet:u=>{
+                let s='';
+
+                for(let i=0;i<16;i++)
+                    s+=`<text class="fl" style="animation-delay:-${rr(0,5)}s" x="${rr(0,790)}" y="${rr(60,440)}" font-size="${rr(14,22)}" ${EM}>🌸</text>`;
+
+                return s;
+            },
+
+            rose:u=>{
+                let s='';
+
+                for(let i=0;i<14;i++)
+                    s+=`<text x="${rr(20,780)}" y="${rr(450,495)}" font-size="${rr(26,36)}" ${EM}>🌹</text>`;
+
+                return s;
+            }
+        };
+
+        const em=(c,x,y,s,g,u)=>
+            (g?`<circle cx="${x}" cy="${y-s*.35}" r="${s*.8}" fill="url(#g${g}${u})"/>`:'')
+            +`<text x="${x}" y="${y}" font-size="${s}" text-anchor="middle" ${EM}>${c}</text>`;
+
+        function scene(S,u){
+            sd=11;
+
+            let s=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice" width="800" height="500">`
+                +base(S.env,u);
+
+            S.c.forEach(o=>{
+                o.el.forEach(e=>
+                    s+=typeof e=='function'
+                        ?e(u)
+                        :typeof e=='string'
+                            ?e
+                            :em(e[0],e[1],e[2],e[3],e[4],u)
+                );
+            });
+
+            S.c.forEach(o=>{
+                if(o.fx)
+                    s+=fx[o.fx](u);
+            });
+
+            return s+'</svg>';
+        }
+
+        const ring=u=>{
+            let s='<ellipse cx="400" cy="408" rx="92" ry="22" fill="#2d6b3a" opacity=".8"/>';
+
+            ['🌼','🌸','🌷','🌺','🌼','🌸','🌷','🌺','🌼','🌸'].forEach((c,i)=>{
+                const a=i/10*6.283;
+                s+=em(c,400+Math.cos(a)*92,415+Math.sin(a)*22,34,'',u);
+            });
+
+            return s+em('✨',400,410,34,'a',u);
+        };
+
+        const canopy=u=>{
+            let s='';
+
+            for(let i=0;i<16;i++)
+                s+=`<circle cx="${i*54}" cy="${rr(0,34)}" r="${rr(34,56)}" fill="#0b3a2c"/>`;
+
+            for(let i=0;i<16;i++)
+                s+=`<circle class="bk" style="animation-delay:-${rr(0,3)}s" cx="${rr(0,800)}" cy="${rr(20,70)}" r="3" fill="#ffd978"/>`;
+
+            return s;
+        };
+
+        const bloom=u=>{
+            let s='<path d="M120 400C110 300 140 200 120 110" stroke="#5b3a3a" stroke-width="16" fill="none"/>';
+
+            for(let i=0;i<18;i++)
+                s+=`<circle cx="${rr(40,210)}" cy="${rr(40,150)}" r="${rr(24,40)}" fill="#ffb3cf" opacity=".85"/>`;
+
+            return s;
+        };
+
+        const lant=u=>{
+            let s='<path d="M0 60Q400 190 800 60" stroke="#6b5a3a" stroke-width="3" fill="none"/>';
+
+            for(let i=1;i<8;i++){
+                const x=i*100,
+                    y=60+Math.sin(i/8*Math.PI)*98*1.0;
+
+                s+=em('🏮',x,y+30,30,'a',u);
+            }
+
+            return s;
+        };
+
+        const cry=u=>{
+            let s='';
+
+            [[560,100,330],[610,60,330],[670,120,330]].forEach(c=>
+                s+=`<polygon points="${c[0]},${c[2]} ${c[0]+18},${c[2]-c[1]*2} ${c[0]+36},${c[2]}" fill="#ff8fd8" opacity=".85"/><circle cx="${c[0]+18}" cy="${c[2]-c[1]}" r="46" fill="url(#gc${u})"/>`
+            );
+
+            return s;
+        };
+
+        const O=(id,ic,n,d,ph,el,f)=>({
+            id,
+            ic,
+            n,
+            d,
+            ph,
+            el,
+            fx:f
+        });
+
+        const ENV={
+            woods:{
+                n:'Ancient Woods',
+                d:'Colossal trees, tangled roots and soft golden light from forgotten magic.',
+                ph:'ancient woods',
+                r:[
+                    [
+                        'Choose a Landmark',
+                        [
+                            O(
+                                'w1',
+                                '🏛️',
+                                'Forgotten Temple',
+                                'Moss-covered columns hum with an old, patient magic.',
+                                'a forgotten temple',
+                                [['🏛️',400,338,130,'a']]
+                            ),
+                            O(
+                                'w2',
+                                '🌳',
+                                'Ancient Hollow Tree',
+                                'A door-shaped glow hides inside its enormous trunk.',
+                                'an ancient hollow tree',
+                                [['🌳',400,345,170,'a'],'<ellipse cx="400" cy="300" rx="13" ry="22" fill="#ffd36a" opacity=".9"/>']
+                            )
+                        ]
+                    ],
+
+                    [
+                        'Choose a Magical Element',
+                        [
+                            O(
+                                'w3',
+                                '💎',
+                                'Glowing Crystals',
+                                'Cool blue light pulses between the roots.',
+                                'glowing crystals',
+                                [['💎',160,415,90,'b'],['💎',100,438,52,'b'],['💎',225,438,56,'b']]
+                            ),
+                            O(
+                                'w4',
+                                '🍄',
+                                'Giant Moonlit Mushrooms',
+                                'Silver caps as tall as cottages drink the moonlight.',
+                                'giant moonlit mushrooms',
+                                [['🍄',150,420,100,'b'],['🍄',235,438,62,'b'],['🍄',90,442,52,'b']]
+                            )
+                        ]
+                    ],
+
+                    [
+                        'Choose a Creature',
+                        [
+                            O(
+                                'w5',
+                                '🦌',
+                                'Ancient Forest Deer',
+                                'Its antlers hold a thousand years of moss and starlight.',
+                                'an ancient forest deer',
+                                [['🦌',630,425,90,'a']]
+                            ),
+                            O(
+                                'w6',
+                                '🐺',
+                                'Mystical Wolf',
+                                'A quiet guardian whose eyes glow like lanterns.',
+                                'a mystical wolf',
+                                [['🐺',630,425,86,'b']]
+                            )
+                        ]
+                    ],
+
+                    [
+                        'Choose a Final Touch',
+                        [
+                            O(
+                                'w7',
+                                '🌙',
+                                'Moonlit Canopy',
+                                'Leaves knit together overhead, strung with sleepy lights.',
+                                'a moonlit canopy',
+                                [['🌙',650,115,72,'a'],canopy]
+                            ),
+                            O(
+                                'w8',
+                                '✨',
+                                'Floating Ancient Runes',
+                                'Glowing symbols drift up from the old stones.',
+                                'floating ancient runes',
+                                [],
+                                'run'
+                            )
+                        ]
+                    ]
+                ]
+            },
+
+            marsh:{
+                n:'Moonlit Marsh',
+                d:'Glowing waters, drifting mist and whispers beneath a violet moon.',
+                ph:'moonlit marsh',
+                r:[
+                    [
+                        'Choose a Landmark',
+                        [
+                            O(
+                                'm1',
+                                '🛖',
+                                'Witch Hut',
+                                'A crooked hut on stilts, window lit from within.',
+                                'a crooked witch hut',
+                                [['🛖',400,345,120,'a']]
+                            ),
+                            O(
+                                'm2',
+                                '🏰',
+                                'Ancient Ruins',
+                                'Broken towers sunk halfway into the water.',
+                                'ancient ruins',
+                                [['🏰',400,345,130,'c']]
+                            )
+                        ]
+                    ],
+
+                    [
+                        'Choose a Magical Element',
+                        [
+                            O(
+                                'm3',
+                                '🍄',
+                                'Giant Mushrooms',
+                                'Glowing caps tall enough to shelter a witch.',
+                                'giant mushrooms',
+                                [['🍄',150,425,100,'c'],['🍄',235,440,62,'c']]
+                            ),
+                            O(
+                                'm4',
+                                '🌳',
+                                'Twisted Trees',
+                                'Bent trunks that curl like sleeping dragons.',
+                                'twisted trees',
+                                [
+                                    u=>tw(170,430,230,'#150f2c')+`<circle cx="170" cy="230" r="40" fill="url(#gc${u})"/>`,
+                                    u=>tw(240,440,150,'#201a45')
+                                ]
+                            )
+                        ]
+                    ],
+
+                    [
+                        'Choose a Creature',
+                        [
+                            O(
+                                'm5',
+                                '✨',
+                                'Fireflies',
+                                'Hundreds of tiny lights, writing slow circles.',
+                                'drifting fireflies',
+                                [],
+                                'fire'
+                            ),
+                            O(
+                                'm6',
+                                '🐸',
+                                'Frog Spirits',
+                                'Pale, singing guardians of the still water.',
+                                'frog spirits',
+                                [['🐸',620,430,64,'b'],['🐸',705,445,38,'b']],
+                                'fire'
+                            )
+                        ]
+                    ],
+
+                    [
+                        'Choose a Final Touch',
+                        [
+                            O(
+                                'm7',
+                                '💎',
+                                'Crystal Spires',
+                                'Pink crystals rise from the mud like frozen lightning.',
+                                'crystal spires',
+                                [cry]
+                            ),
+                            O(
+                                'm8',
+                                '🌕',
+                                'Pale Full Moon',
+                                'A huge cold moon, doubled in the water below.',
+                                'a pale full moon',
+                                [['🌕',640,110,90,'a'],'<ellipse cx="640" cy="400" rx="60" ry="8" fill="#fff6c8" opacity=".35"/>']
+                            )
+                        ]
+                    ]
+                ]
+            },
+
+            garden:{
+                n:'Mythical Garden',
+                d:'Lantern-lit paths, blossoms and tiny wonders at golden dusk.',
+                ph:'mythical garden',
+                r:[
+                    [
+                        'Choose a Landmark',
+                        [
+                            O(
+                                'g1',
+                                '🌼',
+                                'Flower Circle',
+                                'A ring of blooms that opens when you step inside.',
+                                'a ring of dancing flowers',
+                                [ring]
+                            ),
+                            O(
+                                'g2',
+                                '🏡',
+                                'Fairy Village',
+                                'Tiny cottages tucked among the roots and petals.',
+                                'a tiny fairy village',
+                                [['🏡',350,350,80,'a'],['🏡',470,360,52,'a'],['🍄',420,365,48,'c']]
+                            )
+                        ]
+                    ],
+
+                    [
+                        'Choose a Magical Element',
+                        [
+                            O(
+                                'g3',
+                                '⛲',
+                                'Glowing Fountain',
+                                'Water that glimmers with wishes.',
+                                'a glowing fountain',
+                                [['⛲',165,420,110,'b']]
+                            ),
+                            O(
+                                'g4',
+                                '🏮',
+                                'Strings of Lanterns',
+                                'Warm lights that hum when you pass.',
+                                'strings of lanterns',
+                                [lant]
+                            )
+                        ]
+                    ],
+
+                    [
+                        'Choose a Creature',
+                        [
+                            O(
+                                'g5',
+                                '🦋',
+                                'Butterflies',
+                                'Wings painted with tiny stained-glass windows.',
+                                'fluttering butterflies',
+                                [],
+                                'bf'
+                            ),
+                            O(
+                                'g6',
+                                '🦌',
+                                'Gentle Deer',
+                                'A shy visitor that walks without a sound.',
+                                'a gentle deer',
+                                [['🦌',630,430,88,'a']]
+                            )
+                        ]
+                    ],
+
+                    [
+                        'Choose a Final Touch',
+                        [
+                            O(
+                                'g7',
+                                '🌸',
+                                'Cherry Blossoms',
+                                'Petals fall like slow pink snow.',
+                                'drifting cherry blossoms',
+                                [bloom],
+                                'pet'
+                            ),
+                            O(
+                                'g8',
+                                '🌹',
+                                'Roses',
+                                'Velvet blooms climbing every stone.',
+                                'climbing roses',
+                                [['🌹',70,420,64,'c'],['🌹',740,430,64,'c']],
+                                'rose'
+                            )
+                        ]
+                    ]
+                ]
+            }
+        };
+
+        let S,r;
+
+        function show(id,pre){
+            const cur=document.querySelector('.screen.on');
+
+            const nx=()=>{
+                if(pre)
+                    pre();
+
+                const e=$('#'+id);
+
+                e.hidden=false;
+                scrollTo(0,0);
+
+                requestAnimationFrame(()=>
+                    requestAnimationFrame(()=>
+                        e.classList.add('on')
+                    )
+                );
+            };
+
+            if(cur){
+                cur.classList.remove('on');
+
+                setTimeout(()=>{
+                    cur.hidden=true;
+                    nx();
+                },380);
+            }
+            else
+                nx();
+        }
+
+        function round(){
+            const el=$('#round'),
+                isE=r==1;
+
+            let h=`<div class="top"><div class="lab">ROUND ${r} OF 5</div><div class="bar"><i style="width:${(r-1)/5*100+10}%"></i></div>`;
+
+            if(!isE)
+                h+=`<div class="pv">${scene(S,'p')}</div>`;
+
+            const q=isE
+                ?'Where will your grove begin?'
+                :ENV[S.env].r[r-2][0];
+
+            h+=`<h2>${q}</h2></div><div class="cards ${isE?'e':''}">`;
+
+            if(isE)
+                h+=Object.keys(ENV)
+                    .map(k=>`<button class="card" data-k="${k}"><div class="art">${scene({env:k,c:[]},'e'+k)}</div><h3>${ENV[k].n}</h3><p>${ENV[k].d}</p></button>`)
+                    .join('');
+            else
+                h+=ENV[S.env].r[r-2][1]
+                    .map((o,i)=>`<button class="card" data-i="${i}"><div class="ic">${o.ic}</div><h3>${o.n}</h3><p>${o.d}</p></button>`)
+                    .join('');
+
+            el.innerHTML=h+'</div>';
+
+            el.querySelectorAll('.card').forEach(b=>b.onclick=()=>{
+                el.querySelectorAll('.card').forEach(x=>x.disabled=true);
+                b.classList.add('sel');
+
+                setTimeout(()=>{
+                    if(isE){
+                        S.env=b.dataset.k;
+                        document.body.dataset.env=S.env;
+                    }
+                    else
+                        S.c.push(ENV[S.env].r[r-2][1][+b.dataset.i]);
+
+                    r++;
+
+                    r>5
+                        ?show('final',fin)
+                        :show('round',round);
+                },520);
+            });
+        }
+
+        function fin(){
+            const ph=S.c.map(o=>o.ph),
+                l=ph.slice(0,-1).join(', ')+', and '+ph.at(-1);
+
+            $('#final').innerHTML=`<h1>Welcome to Your Enchanted Grove</h1><div class="fin" id="fs">${scene(S,'f')}</div><p>Your grove, born in the ${ENV[S.env].ph}, is filled with ${l}.</p><div class="row"><button class="btn" id="ag">CREATE ANOTHER GROVE</button><button class="btn alt" id="sv">SAVE MY GROVE</button></div>`;
+
+            $('#ag').onclick=()=>{
+                S={env:null,c:[]};
+                r=1;
+                delete document.body.dataset.env;
+                show('start');
+            };
+
+            $('#sv').onclick=save;
+        }
+
+        function save(){
+            const svg=scene(S,'x').replace(' preserveAspectRatio="xMidYMid slice"','');
+            const im=new Image;
+
+            im.onload=()=>{
+                const c=document.createElement('canvas');
+
+                c.width=1600;
+                c.height=1000;
+
+                c.getContext('2d').drawImage(im,0,0,1600,1000);
+
+                c.toBlob(async b=>{
+                    try{
+                        const d=window.claude?await window.claude.use('downloads'):null;
+
+                        if(d){
+                            try{
+                                await d.save({
+                                    filename:'my-enchanted-grove.png',
+                                    data:b
+                                });
+
+                                return;
+                            }
+                            catch(e){
+                                if(e&&e.code=='declined')
+                                    return;
+                            }
+                        }
+                    }
+                    catch(e){}
+
+                    $('#mi').src=c.toDataURL('image/png');
+                    $('#md').classList.add('o');
+                },'image/png');
+            };
+
+            im.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+        }
+
+        $('#mc').onclick=()=>$('#md').classList.remove('o');
+
+        $('#go').onclick=()=>{
+            S={env:null,c:[]};
+            r=1;
+            show('round',round);
+        };
+
+        (function(){
+            let h='';
+
+            for(let i=0;i<26;i++)
+                h+=`<div class="ff" style="left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:-${Math.random()*9}s,-${Math.random()*3}s"></div>`;
+
+            $('#ffs').innerHTML=h;
+
+            $('#sbg').innerHTML=scene({
+                env:'woods',
+                c:[{fx:'fire',el:[]}]
+            },'s').replace('width="800" height="500"','width="100%" height="100%"');
+        })();
+
+        S={env:null,c:[]};
+        r=1;
+    </script>
+</body>
+</html>
