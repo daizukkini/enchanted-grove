@@ -691,6 +691,120 @@
             </div>
         </div>
         <script>
+            
+            /* ===== Audio: everything is synthesized with the Web Audio API (no files) ===== */
+            const AU=(()=> {
+                let ctx,mst,mus,sfx,started=false,on=true,ci=0;
+                try {
+                    on=localStorage.getItem('grove-snd')!=='off';
+                } catch(e) {
+                }
+                const N=m=>440*Math.pow(2,(m-69)/12);      // MIDI note -> Hz
+                const init=()=> {
+                    if(ctx)return;
+                    const C=window.AudioContext||window.webkitAudioContext;
+                    if(!C)return;
+                    ctx=new C();
+                    mst=ctx.createGain();mst.gain.value=on?1:0;mst.connect(ctx.destination);   // master (mute lives here)
+                    sfx=ctx.createGain();sfx.gain.value=.7;sfx.connect(mst);                    // sound-effect bus
+                    mus=ctx.createGain();mus.gain.value=.95;mus.connect(mst);                   // music bus
+                    const dl=ctx.createDelay(1),fb=ctx.createGain(),lp=ctx.createBiquadFilter(),wet=ctx.createGain();
+                    dl.delayTime.value=.45;fb.gain.value=.4;lp.type='lowpass';lp.frequency.value=1800;wet.gain.value=.5;
+                    mus.connect(dl);dl.connect(lp);lp.connect(fb);fb.connect(dl);lp.connect(wet);wet.connect(mst); // soft echo
+                };
+                const tone=(dest,f,t,dur,vol,type='sine',atk=.01)=> {
+                    const o=ctx.createOscillator(),g=ctx.createGain();
+                    o.type=type;o.frequency.value=f;
+                    g.gain.setValueAtTime(0,t);
+                    g.gain.linearRampToValueAtTime(vol,t+atk);
+                    g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+                    o.connect(g);g.connect(dest);
+                    o.start(t);o.stop(t+dur+.05);
+                };
+                // slow chord loop: Cmaj7 -> Am7 -> Fmaj7 -> Gadd9, with sparse pentatonic "bells" on top
+                const chords=[[48,52,55,59],[45,48,52,55],[41,45,48,52],[43,47,50,57]];
+                const PENT=[72,74,76,79,81,84];
+                const bar=()=> {
+                    if(ctx&&ctx.state==='running') {
+                        const t=ctx.currentTime+.05,ch=chords[ci++%4];
+                        ch.forEach((m,i)=>tone(mus,N(m),t+i*.12,9,.09,'triangle',2.5));
+                        tone(mus,N(ch[0]-12),t,9,.11,'sine',2.5);
+                        for(let k=0;k<4;k++)tone(mus,N(PENT[Math.random()*PENT.length|0]),t+1+k*1.8+Math.random()*.8,3.5,.065,'sine',.02);
+                    }
+                    setTimeout(bar,8000);
+                };
+                const play=fn=> {
+                    if(!ctx||!on)return;if(ctx.state==='suspended')ctx.resume();fn(ctx.currentTime);
+                };
+                const setBtn=()=> {
+                    const b=document.getElementById('mute');if(b) {
+                        b.textContent=on?'🔊':'🔇';b.setAttribute('aria-pressed',on);
+                    }
+                };
+                return {
+                    async start() {
+                        init();
+                        if(!ctx)return;
+                        if(ctx.state==='suspended') {
+                            try {
+                                await ctx.resume();
+                            } catch(e) {
+                                return;
+                            }
+                        }
+                        if(!started&&ctx.state==='running') {
+                            started=true;
+                            bar();
+                        }
+                    }, click() {
+                        play(t=> {
+                            tone(sfx,880,t,.09,.12,'sine',.003);tone(sfx,1320,t,.05,.05,'sine',.003);
+                        }
+                        );
+                    }, sparkle() {
+                        play(t=>[84,88,91,96,100].forEach((m,i)=> {
+                            tone(sfx,N(m),t+i*.07,.5,.08);tone(sfx,N(m)*2,t+i*.07,.25,.025,'triangle');
+                        }));
+                    }, weak() {
+                        play(t=> {
+                            tone(sfx,N(64),t,.7,.1,'sine',.02);tone(sfx,N(59),t+.18,.9,.1,'sine',.02);
+                        });
+                    }, chime() {
+                        play(t=>[72,76,79,84].forEach((m,i)=>tone(sfx,N(m),t+i*.15,2.2,.09,'sine',.02)));
+                    }, toggle() {
+                        init();on=!on;
+                        try {
+                            localStorage.setItem('grove-snd',on?'on':'off');
+                        } catch(e) {
+                        }
+                        if(ctx) {
+                            mst.gain.setTargetAtTime(on?1:0,ctx.currentTime,.1);if(on&&ctx.state==='suspended')ctx.resume();
+                        }
+                        setBtn();if(on) {
+                            this.start();this.click();
+                        }
+                    }, vis(h) {
+                        if(ctx)h?ctx.suspend():(on&&ctx.resume());
+                    }, setBtn
+                };
+            })();
+            ['pointerdown','keydown'].forEach(ev=>document.addEventListener(ev,()=>AU.start(), {
+                passive:true
+            }));
+            document.addEventListener('click',e=> {
+                // one listener gives EVERY button a click sound
+                const b=e.target.closest('button');
+                if(!b||b.id==='mute')return;
+                AU.start();AU.click();
+            }
+            ,true);
+            document.addEventListener('visibilitychange',()=>AU.vis(document.hidden));
+            // pause audio when the tab is hidden
+            document.addEventListener('DOMContentLoaded',()=> {
+                AU.setBtn();
+                document.getElementById('mute').onclick=()=>AU.toggle();
+            });
+            
             const $=s=>document.querySelector(s);
             const EM='font-family="Apple Color Emoji,Segoe UI Emoji,Noto Color Emoji,sans-serif"';
             let sd=1;
